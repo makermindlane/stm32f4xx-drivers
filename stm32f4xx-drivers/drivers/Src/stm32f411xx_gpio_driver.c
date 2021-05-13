@@ -257,7 +257,7 @@ void gpio_irqInterruptConfig(uint8_t irqNumber, uint8_t enOrDi) {
 }
 
 
-void gpio_irqPriorityConfig(uint8_t irqNumber, uint8_t irqPriority) {
+void gpio_irqPriorityConfig(uint8_t irqNumber, uint32_t irqPriority) {
 
 	uint8_t iprx = irqNumber / 4;
 	uint8_t iprxSection = irqNumber % 4;
