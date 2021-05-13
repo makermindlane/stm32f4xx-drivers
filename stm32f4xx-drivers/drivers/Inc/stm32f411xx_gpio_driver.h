@@ -18,10 +18,10 @@ typedef struct {
 
 	uint8_t gpioPinNumber;						/* Possible values from @GPIO_PIN_NUMBERS */
 	uint8_t gpioPinMode;						/* Possible values from @GPIO_PIN_MODES */
-	uint8_t gpioPinOPType;						/* Possible values from @GPIO_PIN_OP_TYPE */
+	uint8_t gpioPinOPType;						/* Possible values from @GPIO_PIN_OPTYPE */
 	uint8_t gpioPinSpeed;						/* Possible values from @GPIO_PIN_SPEED */
-	uint8_t gpioPinPuPdCtrl;					/* Possible values from @GPIO_PIN_PUPD */
-	uint8_t gpioPinAltFunMode;					/* Possible values from @GPIO_PIN_AF */
+	uint8_t gpioPinPuPd;						/* Possible values from @GPIO_PIN_PUPD */
+	uint8_t gpioPinAF;							/* Possible values from @GPIO_PIN_AF */
 
 } GPIO_PinConfig_t;
 
@@ -63,40 +63,41 @@ typedef struct {
  * @GPIO_PIN_MODES
  * GPIO pin possible modes
  */
-#define GPIO_MODE_IN				0
-#define GPIO_MODE_OUT				1
-#define GPIO_MODE_ALTFN				2
-#define GPIO_MODE_ANALOG			3
-#define GPIO_MODE_IT_FT				4
-#define GPIO_MODE_IT_RT				5
-#define GPIO_MODE_IT_RFT			6
+#define GPIO_PIN_MODE_IN			0
+#define GPIO_PIN_MODE_OUT			1
+#define GPIO_PIN_MODE_AF			2
+#define GPIO_PIN_MODE_ANALOG		3
+
+#define GPIO_PIN_MODE_IT_FT			4
+#define GPIO_PIN_MODE_IT_RT			5
+#define GPIO_PIN_MODE_IT_RFT		6
 
 
 /*
- * @GPIO_PIN_OP_TYPE
+ * @GPIO_PIN_OPTYPE
  * GPIO pin possible output types
  */
-#define GPIO_OP_TYPE_PP				0
-#define GPIO_OP_TYPE_OD				1
+#define GPIO_PIN_OPTYPE_PP				0
+#define GPIO_PIN_OPTYPE_OD				1
 
 
 /*
  * @GPIO_PIN_SPEED
  * GPIO pin possible output speeds
  */
-#define GPIO_SPEED_LOW				0
-#define GPIO_SPEED_MEDIUM			1
-#define GPIO_SPEED_FAST				2
-#define GPIO_SPEED_HIGH				3
+#define GPIO_PIN_SPEED_LOW			0
+#define GPIO_PIN_SPEED_MEDIUM		1
+#define GPIO_PIN_SPEED_FAST			2
+#define GPIO_PIN_SPEED_HIGH			3
 
 
 /*
  * @GPIO_PIN_PUPD
  * GPIO pin pull and pull down configuration macros
  */
-#define GPIO_NO_PUPD				0
-#define GPIO_PIN_PU					1
-#define GPIO_PIN_PD					2
+#define GPIO_PIN_PUPD_NO			0
+#define GPIO_PIN_PUPD_PU			1
+#define GPIO_PIN_PUPD_PD			2
 
 
 /*
@@ -151,38 +152,9 @@ void gpio_toggleOutputPin(GPIO_RegDef_t *gpioPort, uint8_t pinNumber);
 /*
  * IRQ configuration and ISR handling
  */
-void gpio_irqConfig(uint8_t irqNumber, uint8_t irqPriority, uint8_t enOrDi);
+void gpio_irqInterruptConfig(uint8_t irqNumber, uint8_t enOrDi);
+void gpio_irqPriorityConfig(uint8_t irqNumber, uint8_t irqPriority);
 void gpio_irqHandling(uint8_t pinNumber);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

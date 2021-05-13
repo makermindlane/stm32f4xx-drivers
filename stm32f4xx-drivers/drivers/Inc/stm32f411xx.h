@@ -11,6 +11,59 @@
 #include <stdint.h>
 
 
+/******************************************** START: Processor specific details *********************************************/
+
+
+/*
+ * ARM cortex M4 processor NVIC ISERx register addresses
+ */
+#define NVIC_ISER0							((volatile uint32_t*) 0xE000E100)
+#define NVIC_ISER1							((volatile uint32_t*) 0xE000E104)
+#define NVIC_ISER2							((volatile uint32_t*) 0xE000E108)
+#define NVIC_ISER3							((volatile uint32_t*) 0xE000E10C)
+
+
+/*
+ * ARM cortex M4 processor NVIC ICERx register addresses
+ */
+#define NVIC_ICER0							((volatile uint32_t*) 0xE000E180)
+#define NVIC_ICER1							((volatile uint32_t*) 0xE000E184)
+#define NVIC_ICER2							((volatile uint32_t*) 0xE000E188)
+#define NVIC_ICER3							((volatile uint32_t*) 0xE000E18C)
+
+
+/*
+ * ARM cortex M4 processor NVIC IPRx register addresses
+ */
+#define NVIC_IPR_BASEADDR					((volatile uint32_t*) 0xE000E400)
+
+
+#define NO_PR_BITS_IMPLEMENTED				(4)
+
+
+/*
+ * NVIC interrupt priority possible values
+ */
+#define NVIC_PRIORITY_0						(0)
+#define NVIC_PRIORITY_1						(1)
+#define NVIC_PRIORITY_2						(2)
+#define NVIC_PRIORITY_3						(3)
+#define NVIC_PRIORITY_4						(4)
+#define NVIC_PRIORITY_5						(5)
+#define NVIC_PRIORITY_6						(6)
+#define NVIC_PRIORITY_7						(7)
+#define NVIC_PRIORITY_8						(8)
+#define NVIC_PRIORITY_9						(9)
+#define NVIC_PRIORITY_10					(10)
+#define NVIC_PRIORITY_11					(11)
+#define NVIC_PRIORITY_12					(12)
+#define NVIC_PRIORITY_13					(13)
+#define NVIC_PRIORITY_14					(14)
+#define NVIC_PRIORITY_15					(15)
+
+/******************************************** END: Processor specific details *********************************************/
+
+
 /*
  * Base addresses of Flash and SRAM memories
  */
@@ -68,10 +121,13 @@
 #define USART1_BASEADDR						(APB2PERIPH_BASEADDR + 0x1000)
 #define USART6_BASEADDR						(APB2PERIPH_BASEADDR + 0x1400)
 
+#define SYSCFG_BASEADDR						(APB2PERIPH_BASEADDR + 0x3800)
+
 
 /********************************* Peripheral register definition structures *********************************/
 
 typedef struct {
+
 	volatile uint32_t MODER;
 	volatile uint32_t OTYPER;
 	volatile uint32_t OSPEEDR;
@@ -81,9 +137,15 @@ typedef struct {
 	volatile uint32_t BSRR;
 	volatile uint32_t LCKR;
 	volatile uint32_t AFR[2];
+
 } GPIO_RegDef_t;
 
+
+/*
+ * Peripheral register definition for RCC
+ */
 typedef struct {
+
 	volatile uint32_t CR;
 	volatile uint32_t PLLCFGR;
 	volatile uint32_t CFGR;
@@ -113,7 +175,37 @@ typedef struct {
 	volatile uint32_t PLLI2SCFGR;
 	uint32_t RESERVED8;
 	volatile uint32_t DCKCFGR;
+
 } RCC_RegDef_t;
+
+
+/*
+ * Peripheral register definition for EXTI
+ */
+typedef struct {
+
+	volatile uint32_t IMR;
+	volatile uint32_t EMR;
+	volatile uint32_t RTSR;
+	volatile uint32_t FTSR;
+	volatile uint32_t SWIER;
+	volatile uint32_t PR;
+
+} EXTI_RegDef_t;
+
+
+/*
+ * SYSCFG register definition
+ */
+typedef struct {
+
+	volatile uint32_t MEMRMP;
+	volatile uint32_t PMC;
+	volatile uint32_t EXTICR[4];
+	uint32_t RESERVED1[2];
+	volatile uint32_t CMPCR;
+
+} SYSCFG_RegDef_t;
 
 
 /**
@@ -127,6 +219,10 @@ typedef struct {
 #define GPIOH								((GPIO_RegDef_t*) GPIOH_BASEADDR)
 
 #define RCC									((RCC_RegDef_t*) RCC_BASEADDR)
+
+#define EXTI								((EXTI_RegDef_t*) EXTI_BASEADDR)
+
+#define SYSCFG								((SYSCFG_RegDef_t*) SYSCFG_BASEADDR)
 
 
 /*
@@ -217,7 +313,31 @@ typedef struct {
 /*
  * Clock enable macros for SYSCFG peripherals
  */
+#define SYSCFG_PCLK_EN()					(RCC->APB2ENR |= (1 << 14))
+#define SYSCFG_PCLK_DI()					(RCC->APB2ENR &= ~(1 << 14))
 
+
+/*
+ * Returns the port code for the given GPIOx base address
+ */
+#define GPIO_BASEADDR_TO_PORTCODE(p)		((p == GPIOA)?0:\
+											 (p== GPIOB)?1:\
+											 (p == GPIOC)?2:\
+											 (p == GPIOD)?3:\
+											 (p == GPIOE)?4:\
+											 (p == GPIOH)?7:0)
+
+
+/*
+ * IRQ numbers of stm32f411x MCU
+ */
+#define IRQ_NO_EXTI0						6
+#define IRQ_NO_EXTI1						7
+#define IRQ_NO_EXTI2						8
+#define IRQ_NO_EXTI3						9
+#define IRQ_NO_EXTI4						10
+#define IRQ_NO_EXTI9_5						23
+#define IRQ_NO_EXTI15_10					40
 
 
 /*
@@ -230,6 +350,8 @@ typedef struct {
 #define GPIO_PIN_SET						SET
 #define GPIO_PIN_RESET						RESET
 
+
+#include "stm32f411xx_gpio_driver.h"
 
 #endif /* INC_STM32F411XX_H_ */
 
