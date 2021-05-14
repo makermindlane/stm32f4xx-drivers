@@ -11,8 +11,8 @@
 #include <stdint.h>
 
 
-/******************************************** START: Processor specific details *********************************************/
 
+/****************************************** START: Processor specific details *******************************************/
 
 /*
  * ARM cortex M4 processor NVIC ISERx register addresses
@@ -61,8 +61,11 @@
 #define NVIC_PRIORITY_14					(14)
 #define NVIC_PRIORITY_15					(15)
 
-/******************************************** END: Processor specific details *********************************************/
+/****************************************** END: Processor specific details *******************************************/
 
+
+
+/******************************************* START: Register Base addresses *******************************************/
 
 /*
  * Base addresses of Flash and SRAM memories
@@ -123,8 +126,11 @@
 
 #define SYSCFG_BASEADDR						(APB2PERIPH_BASEADDR + 0x3800)
 
+/******************************************* END: Register Base addresses *******************************************/
 
-/********************************* Peripheral register definition structures *********************************/
+
+
+/********************************* START: Peripheral register definition structures *********************************/
 
 typedef struct {
 
@@ -207,6 +213,20 @@ typedef struct {
 
 } SYSCFG_RegDef_t;
 
+/*
+ * SPI register definition
+ */
+typedef struct {
+
+
+
+} SPI_RegDef_t;
+
+/********************************* END: Peripheral register definition structures *********************************/
+
+
+
+/*********************** START: Peripheral definitions typecasted to corresponding struct defs **********************/
 
 /**
  * Peripheral definition (peripheral base address typecasted to xxx_RegDef_t)
@@ -224,6 +244,17 @@ typedef struct {
 
 #define SYSCFG								((SYSCFG_RegDef_t*) SYSCFG_BASEADDR)
 
+#define SPI1								((SPI_RegDef_t*) SPI1_BASEADDR)
+#define SPI2								((SPI_RegDef_t*) SPI2_BASEADDR)
+#define SPI3								((SPI_RegDef_t*) SPI3_BASEADDR)
+#define SPI4								((SPI_RegDef_t*) SPI4_BASEADDR)
+#define SPI5								((SPI_RegDef_t*) SPI5_BASEADDR)
+
+/*********************** END: Peripheral definitions typecasted to corresponding struct defs **********************/
+
+
+
+/******************************** START: Peripheral clock enable and disable macros *******************************/
 
 /*
  * Clock enable macros for GPIOx peripherals
@@ -247,15 +278,6 @@ typedef struct {
 #define GPIOH_PCLK_DI()						(RCC->AHB1ENR &= ~(1 << 7))
 
 
-/*
- * Macros to disable GPIOx peripherals
- */
-#define GPIOA_REG_RESET()					do { (RCC->AHB1RSTR |= (1 << 0)); (RCC->AHB1RSTR &= ~(1 << 0)); } while (0)
-#define GPIOB_REG_RESET()					do { (RCC->AHB1RSTR |= (1 << 1)); (RCC->AHB1RSTR &= ~(1 << 1)); } while (0)
-#define GPIOC_REG_RESET()					do { (RCC->AHB1RSTR |= (1 << 2)); (RCC->AHB1RSTR &= ~(1 << 2)); } while (0)
-#define GPIOD_REG_RESET()					do { (RCC->AHB1RSTR |= (1 << 3)); (RCC->AHB1RSTR &= ~(1 << 3)); } while (0)
-#define GPIOE_REG_RESET()					do { (RCC->AHB1RSTR |= (1 << 4)); (RCC->AHB1RSTR &= ~(1 << 4)); } while (0)
-#define GPIOH_REG_RESET()					do { (RCC->AHB1RSTR |= (1 << 7)); (RCC->AHB1RSTR &= ~(1 << 7)); } while (0)
 
 
 /*
@@ -316,6 +338,9 @@ typedef struct {
 #define SYSCFG_PCLK_EN()					(RCC->APB2ENR |= (1 << 14))
 #define SYSCFG_PCLK_DI()					(RCC->APB2ENR &= ~(1 << 14))
 
+/******************************** END: Peripheral clock enable and disable macros *******************************/
+
+
 
 /*
  * Returns the port code for the given GPIOx base address
@@ -326,6 +351,17 @@ typedef struct {
 											 (p == GPIOD)?3:\
 											 (p == GPIOE)?4:\
 											 (p == GPIOH)?7:0)
+
+
+/*
+ * Macros to disable GPIOx peripherals
+ */
+#define GPIOA_REG_RESET()					do { (RCC->AHB1RSTR |= (1 << 0)); (RCC->AHB1RSTR &= ~(1 << 0)); } while (0)
+#define GPIOB_REG_RESET()					do { (RCC->AHB1RSTR |= (1 << 1)); (RCC->AHB1RSTR &= ~(1 << 1)); } while (0)
+#define GPIOC_REG_RESET()					do { (RCC->AHB1RSTR |= (1 << 2)); (RCC->AHB1RSTR &= ~(1 << 2)); } while (0)
+#define GPIOD_REG_RESET()					do { (RCC->AHB1RSTR |= (1 << 3)); (RCC->AHB1RSTR &= ~(1 << 3)); } while (0)
+#define GPIOE_REG_RESET()					do { (RCC->AHB1RSTR |= (1 << 4)); (RCC->AHB1RSTR &= ~(1 << 4)); } while (0)
+#define GPIOH_REG_RESET()					do { (RCC->AHB1RSTR |= (1 << 7)); (RCC->AHB1RSTR &= ~(1 << 7)); } while (0)
 
 
 /*
@@ -350,8 +386,6 @@ typedef struct {
 #define GPIO_PIN_SET						SET
 #define GPIO_PIN_RESET						RESET
 
-
-#include "stm32f411xx_gpio_driver.h"
 
 #endif /* INC_STM32F411XX_H_ */
 
