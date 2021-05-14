@@ -263,7 +263,7 @@ void gpio_irqPriorityConfig(uint8_t irqNumber, uint32_t irqPriority) {
 	uint8_t iprxSection = irqNumber % 4;
 	uint8_t shiftAmount = (8 * iprxSection) + (8 - NO_PR_BITS_IMPLEMENTED);
 
-	*(NVIC_IPR_BASEADDR + (iprx * 4)) |= (irqPriority << shiftAmount);
+	*(NVIC_IPR_BASEADDR + iprx) |= (irqPriority << shiftAmount);
 
 }
 
