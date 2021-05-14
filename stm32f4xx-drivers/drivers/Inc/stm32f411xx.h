@@ -218,7 +218,15 @@ typedef struct {
  */
 typedef struct {
 
-
+	volatile uint32_t CR1;
+	uint32_t RESERVED;
+	volatile uint32_t SR;
+	volatile uint32_t DR;
+	volatile uint32_t CRCPR;
+	volatile uint32_t RXCRCR;
+	volatile uint32_t TXCRCR;
+	volatile uint32_t I2SCFGR;
+	volatile uint32_t I2SPR;
 
 } SPI_RegDef_t;
 
@@ -276,8 +284,6 @@ typedef struct {
 #define GPIOD_PCLK_DI()						(RCC->AHB1ENR &= ~(1 << 3))
 #define GPIOE_PCLK_DI()						(RCC->AHB1ENR &= ~(1 << 4))
 #define GPIOH_PCLK_DI()						(RCC->AHB1ENR &= ~(1 << 7))
-
-
 
 
 /*
