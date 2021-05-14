@@ -226,7 +226,7 @@ typedef struct {
 
 
 
-/*********************** START: Peripheral definitions typecasted to corresponding struct defs **********************/
+/********************* START: Peripheral definitions typecasted to corresponding struct defs **********************/
 
 /**
  * Peripheral definition (peripheral base address typecasted to xxx_RegDef_t)
