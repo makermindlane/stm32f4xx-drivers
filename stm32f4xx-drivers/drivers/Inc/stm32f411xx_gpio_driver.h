@@ -12,7 +12,7 @@
 
 
 /*
- * Configuration structure for a GPIO pin
+ * Configuration structure for a GPIOx pin
  */
 typedef struct {
 
@@ -27,7 +27,7 @@ typedef struct {
 
 
 /*
- * Handle structure for GPIO pin
+ * Handle structure for GPIOx pin
  */
 typedef struct {
 

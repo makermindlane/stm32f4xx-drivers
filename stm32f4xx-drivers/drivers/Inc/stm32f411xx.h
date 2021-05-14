@@ -12,8 +12,9 @@
 
 
 
-/****************************************** START: Processor specific details *******************************************/
-
+/***************************************************************************************************************
+ *										 START: Processor specific details
+ **************************************************************************************************************/
 /*
  * ARM cortex M4 processor NVIC ISERx register addresses
  */
@@ -61,12 +62,15 @@
 #define NVIC_PRIORITY_14					(14)
 #define NVIC_PRIORITY_15					(15)
 
-/****************************************** END: Processor specific details *******************************************/
+/***************************************************************************************************************
+ *										END: Processor specific details
+ **************************************************************************************************************/
 
 
 
-/******************************************* START: Register Base addresses *******************************************/
-
+/***************************************************************************************************************
+ *										 START: Register Base addresses
+ **************************************************************************************************************/
 /*
  * Base addresses of Flash and SRAM memories
  */
@@ -126,12 +130,15 @@
 
 #define SYSCFG_BASEADDR						(APB2PERIPH_BASEADDR + 0x3800)
 
-/******************************************* END: Register Base addresses *******************************************/
+/***************************************************************************************************************
+ *										END: Register Base addresses
+ **************************************************************************************************************/
 
 
 
-/********************************* START: Peripheral register definition structures *********************************/
-
+/***************************************************************************************************************
+ * 								START: Peripheral register definition structures
+ **************************************************************************************************************/
 typedef struct {
 
 	volatile uint32_t MODER;
@@ -218,16 +225,27 @@ typedef struct {
  */
 typedef struct {
 
-
+	volatile uint32_t CR1;
+	uint32_t RESERVED;
+	volatile uint32_t SR;
+	volatile uint32_t DR;
+	volatile uint32_t CRCPR;
+	volatile uint32_t RXCRCR;
+	volatile uint32_t TXCRCR;
+	volatile uint32_t I2SCFGR;
+	volatile uint32_t I2SPR;
 
 } SPI_RegDef_t;
 
-/********************************* END: Peripheral register definition structures *********************************/
+/***************************************************************************************************************
+ *								END: Peripheral register definition structures
+ **************************************************************************************************************/
 
 
 
-/********************* START: Peripheral definitions typecasted to corresponding struct defs **********************/
-
+/***************************************************************************************************************
+ *					START: Peripheral definitions typecasted to corresponding struct defs
+ **************************************************************************************************************/
 /**
  * Peripheral definition (peripheral base address typecasted to xxx_RegDef_t)
  */
@@ -250,12 +268,15 @@ typedef struct {
 #define SPI4								((SPI_RegDef_t*) SPI4_BASEADDR)
 #define SPI5								((SPI_RegDef_t*) SPI5_BASEADDR)
 
-/*********************** END: Peripheral definitions typecasted to corresponding struct defs **********************/
+/***************************************************************************************************************
+ *					END: Peripheral definitions typecasted to corresponding struct defs
+ **************************************************************************************************************/
 
 
 
-/******************************** START: Peripheral clock enable and disable macros *******************************/
-
+/***************************************************************************************************************
+ *							 START: Peripheral clock enable and disable macros
+ **************************************************************************************************************/
 /*
  * Clock enable macros for GPIOx peripherals
  */
@@ -276,8 +297,6 @@ typedef struct {
 #define GPIOD_PCLK_DI()						(RCC->AHB1ENR &= ~(1 << 3))
 #define GPIOE_PCLK_DI()						(RCC->AHB1ENR &= ~(1 << 4))
 #define GPIOH_PCLK_DI()						(RCC->AHB1ENR &= ~(1 << 7))
-
-
 
 
 /*
@@ -338,7 +357,9 @@ typedef struct {
 #define SYSCFG_PCLK_EN()					(RCC->APB2ENR |= (1 << 14))
 #define SYSCFG_PCLK_DI()					(RCC->APB2ENR &= ~(1 << 14))
 
-/******************************** END: Peripheral clock enable and disable macros *******************************/
+/***************************************************************************************************************
+ *								END: Peripheral clock enable and disable macros
+ **************************************************************************************************************/
 
 
 
@@ -385,6 +406,54 @@ typedef struct {
 #define RESET								DISABLE
 #define GPIO_PIN_SET						SET
 #define GPIO_PIN_RESET						RESET
+
+
+
+/***************************************************************************************************************
+ *								START: Bit position definitions of SPI peripheral
+ **************************************************************************************************************/
+
+/*
+ * Bit position for SPI_CR1 register
+ */
+#define SPI_CR1_CPHA						0
+#define SPI_CR1_CPOL						1
+#define SPI_CR1_MSTR						2
+#define SPI_CR1_BR							3
+#define SPI_CR1_SSM							9
+#define SPI_CR1_RXONLY						10
+#define SPI_CR1_DFF							11
+#define SPI_CR1_BIDIMODE					15
+
+
+/*
+ * Bit position for SPI_CR2 register
+ */
+#define SPI_CR2_RXDMAEN						0
+#define SPI_CR2_TXDMAEN						1
+#define SPI_CR2_SSOE						2
+#define SPI_CR2_FRF							4
+#define SPI_CR2_ERRIE						5
+#define SPI_CR2_RXNEIE						6
+#define SPI_CR2_TXEIE						7
+
+
+/*
+ * Bit position for SPI_SR register
+ */
+#define SPI_SR_RXNE							0
+#define SPI_SR_TXE							1
+#define SPI_SR_CHSIDE						2
+#define SPI_SR_UDR							3
+#define SPI_SR_CRCERR						4
+#define SPI_SR_MODF							5
+#define SPI_SR_OVR							6
+#define SPI_SR_BSY							7
+#define SPI_SR_FRE							8
+
+/***************************************************************************************************************
+ *								START: Bit position definitions of SPI peripheral
+ **************************************************************************************************************/
 
 
 #endif /* INC_STM32F411XX_H_ */
