@@ -386,6 +386,16 @@ typedef struct {
 
 
 /*
+ * Macros to disable SPIx peripherals
+ */
+#define SPI1_REG_RESET()					do { (RCC->APB2RSTR |= (1 << 12)); (RCC->APB2RSTR &= ~(1 << 12)); } while (0)
+#define SPI2_REG_RESET()					do { (RCC->APB1RSTR |= (1 << 14)); (RCC->APB1RSTR &= ~(1 << 14)); } while (0)
+#define SPI3_REG_RESET()					do { (RCC->APB1RSTR |= (1 << 15)); (RCC->APB1RSTR &= ~(1 << 15)); } while (0)
+#define SPI4_REG_RESET()					do { (RCC->APB2RSTR |= (1 << 13)); (RCC->APB2RSTR &= ~(1 << 13)); } while (0)
+#define SPI5_REG_RESET()					do { (RCC->APB2RSTR |= (1 << 20)); (RCC->APB2RSTR &= ~(1 << 20)); } while (0)
+
+
+/*
  * IRQ numbers of stm32f411x MCU
  */
 #define IRQ_NO_EXTI0						6
@@ -406,6 +416,8 @@ typedef struct {
 #define RESET								DISABLE
 #define GPIO_PIN_SET						SET
 #define GPIO_PIN_RESET						RESET
+
+#define CHECK_BIT_FOR_SET(reg, bit)					((reg) & (1 << (bit)))
 
 
 
@@ -452,7 +464,7 @@ typedef struct {
 #define SPI_SR_FRE							8
 
 /***************************************************************************************************************
- *								START: Bit position definitions of SPI peripheral
+ *								END: Bit position definitions of SPI peripheral
  **************************************************************************************************************/
 
 
