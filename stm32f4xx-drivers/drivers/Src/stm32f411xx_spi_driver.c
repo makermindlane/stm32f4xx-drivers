@@ -107,6 +107,18 @@ void spi_init(SPI_Handle_t *spiHandle) {
 
 void spi_deInit(SPI_RegDef_t *spiReg) {
 
+	if (spiReg == SPI1) {
+		SPI1_REG_RESET();
+	} else if (spiReg == SPI2) {
+		SPI2_REG_RESET();
+	} else if (spiReg == SPI3) {
+		SPI3_REG_RESET();
+	} else if (spiReg == SPI4) {
+		SPI4_REG_RESET();
+	} else if (spiReg == SPI5) {
+		SPI5_REG_RESET();
+	}
+
 }
 
 

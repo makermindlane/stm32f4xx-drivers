@@ -386,6 +386,16 @@ typedef struct {
 
 
 /*
+ * Macros to disable SPIx peripherals
+ */
+#define SPI1_REG_RESET()					do { (RCC->APB2RSTR |= (1 << 12)); (RCC->APB2RSTR &= ~(1 << 12)); } while (0)
+#define SPI2_REG_RESET()					do { (RCC->APB1RSTR |= (1 << 14)); (RCC->APB1RSTR &= ~(1 << 14)); } while (0)
+#define SPI3_REG_RESET()					do { (RCC->APB1RSTR |= (1 << 15)); (RCC->APB1RSTR &= ~(1 << 15)); } while (0)
+#define SPI4_REG_RESET()					do { (RCC->APB2RSTR |= (1 << 13)); (RCC->APB2RSTR &= ~(1 << 13)); } while (0)
+#define SPI5_REG_RESET()					do { (RCC->APB2RSTR |= (1 << 20)); (RCC->APB2RSTR &= ~(1 << 20)); } while (0)
+
+
+/*
  * IRQ numbers of stm32f411x MCU
  */
 #define IRQ_NO_EXTI0						6
