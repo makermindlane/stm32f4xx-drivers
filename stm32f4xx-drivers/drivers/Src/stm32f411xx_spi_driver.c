@@ -62,6 +62,9 @@ void spi_init(SPI_Handle_t *spiHandle) {
 
 	uint32_t temp = 0;
 
+	// enable spi peripheral clock
+	spi_periClockControl(spiHandle->spiReg, ENABLE);
+
 	// configure the device mode
 	temp |= ((spiHandle->spiPinCfg.deviceMode) << SPI_CR1_MSTR);
 
@@ -126,6 +129,23 @@ void spi_deInit(SPI_RegDef_t *spiReg) {
  * Data send and receive
  */
 void spi_sendData(SPI_RegDef_t *spiReg, uint8_t *txBuffer, uint32_t len) {
+
+	while (len > 0) {
+
+		while (!(CHECK_BIT_FOR_SET(spiReg->SR, SPI_SR_TXE)));
+
+		if (spiReg->CR1 & (1 << SPI_CR1_DFF)) {
+			// Data is 16 bit wide
+			spiReg->DR = *((uint16_t*) txBuffer);
+			(uint16_t*) txBuffer++;
+			len -= 2;
+		} else {
+			// Data is 8 bit wide
+			spiReg->DR = *txBuffer;
+			txBuffer++;
+			len--;
+		}
+	}
 
 }
 

@@ -70,6 +70,9 @@ void gpio_init(GPIO_Handle_t *gpioHandle) {
 
 	uint32_t temp = 0;
 
+	// enable gpio peripheral clock
+	gpio_periClockControl(gpioHandle->gpioPort, ENABLE);
+
 	// configure mode of the gpio pin
 	if (gpioHandle->gpioPinCfg.gpioPinMode <= GPIO_PIN_MODE_ANALOG) {
 

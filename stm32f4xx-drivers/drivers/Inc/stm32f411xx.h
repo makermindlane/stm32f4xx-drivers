@@ -417,6 +417,8 @@ typedef struct {
 #define GPIO_PIN_SET						SET
 #define GPIO_PIN_RESET						RESET
 
+#define CHECK_BIT_FOR_SET(reg, bit)					((reg) & (1 << (bit)))
+
 
 
 /***************************************************************************************************************
