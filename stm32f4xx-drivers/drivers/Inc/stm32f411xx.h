@@ -452,7 +452,7 @@ typedef struct {
 #define SPI_SR_FRE							8
 
 /***************************************************************************************************************
- *								START: Bit position definitions of SPI peripheral
+ *								END: Bit position definitions of SPI peripheral
  **************************************************************************************************************/
 
 

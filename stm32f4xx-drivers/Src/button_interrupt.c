@@ -9,17 +9,23 @@ void delay() {
 
 void initButton() {
 
-	GPIO_PinConfig_t gpioButtonPinCfg;
-	memset(&gpioButtonPinCfg, 0, sizeof(gpioButtonPinCfg));
-	gpioButtonPinCfg.gpioPinMode = GPIO_PIN_MODE_IT_FT;
+//	GPIO_PinConfig_t gpioButtonPinCfg;
+//	memset(&gpioButtonPinCfg, 0, sizeof(gpioButtonPinCfg));
+//	gpioButtonPinCfg.gpioPinMode = GPIO_PIN_MODE_IT_FT;
 //	gpioButtonPinCfg.gpioPinMode = GPIO_PIN_MODE_IN;
-	gpioButtonPinCfg.gpioPinNumber = GPIO_PIN_NO_12;
-	gpioButtonPinCfg.gpioPinPuPd = GPIO_PIN_PUPD_PD;
-	gpioButtonPinCfg.gpioPinSpeed = GPIO_PIN_SPEED_FAST;
+//	gpioButtonPinCfg.gpioPinNumber = GPIO_PIN_NO_12;
+//	gpioButtonPinCfg.gpioPinPuPd = GPIO_PIN_PUPD_PD;
+//	gpioButtonPinCfg.gpioPinSpeed = GPIO_PIN_SPEED_FAST;
+
+	// TODO check whether code works without memset(). If not find a way to use it properly.
 
 	GPIO_Handle_t gpioButtonHandle;
+
 	gpioButtonHandle.gpioPort = GPIOB;
-	gpioButtonHandle.gpioPinCfg = &gpioButtonPinCfg;
+	gpioButtonHandle.gpioPinCfg.gpioPinMode = GPIO_PIN_MODE_IT_FT;
+	gpioButtonHandle.gpioPinCfg.gpioPinNumber = GPIO_PIN_NO_12;
+	gpioButtonHandle.gpioPinCfg.gpioPinPuPd = GPIO_PIN_PUPD_PD;
+	gpioButtonHandle.gpioPinCfg.gpioPinSpeed = GPIO_PIN_SPEED_FAST;
 
 	gpio_periClockControl(GPIOB, ENABLE);
 	gpio_init(&gpioButtonHandle);
@@ -29,17 +35,22 @@ void initButton() {
 
 void initLed() {
 
-	GPIO_PinConfig_t gpioLedPinCfg;
-	memset(&gpioLedPinCfg, 0, sizeof(gpioLedPinCfg));
-	gpioLedPinCfg.gpioPinMode = GPIO_PIN_MODE_OUT;
-	gpioLedPinCfg.gpioPinNumber = GPIO_PIN_NO_13;
-	gpioLedPinCfg.gpioPinOPType = GPIO_PIN_OPTYPE_PP;
-	gpioLedPinCfg.gpioPinPuPd = GPIO_PIN_PUPD_NO;
-	gpioLedPinCfg.gpioPinSpeed = GPIO_PIN_SPEED_FAST;
+//	GPIO_PinConfig_t gpioLedPinCfg;
+//	memset(&gpioLedPinCfg, 0, sizeof(gpioLedPinCfg));
+//	gpioLedPinCfg.gpioPinMode = GPIO_PIN_MODE_OUT;
+//	gpioLedPinCfg.gpioPinNumber = GPIO_PIN_NO_13;
+//	gpioLedPinCfg.gpioPinOPType = GPIO_PIN_OPTYPE_PP;
+//	gpioLedPinCfg.gpioPinPuPd = GPIO_PIN_PUPD_NO;
+//	gpioLedPinCfg.gpioPinSpeed = GPIO_PIN_SPEED_FAST;
 
 	GPIO_Handle_t gpioLedHandle;
+
 	gpioLedHandle.gpioPort = GPIOB;
-	gpioLedHandle.gpioPinCfg = &gpioLedPinCfg;
+	gpioLedHandle.gpioPinCfg.gpioPinMode = GPIO_PIN_MODE_OUT;
+	gpioLedHandle.gpioPinCfg.gpioPinNumber = GPIO_PIN_NO_13;
+	gpioLedHandle.gpioPinCfg.gpioPinOPType = GPIO_PIN_OPTYPE_PP;
+	gpioLedHandle.gpioPinCfg.gpioPinPuPd = GPIO_PIN_PUPD_NO;
+	gpioLedHandle.gpioPinCfg.gpioPinSpeed = GPIO_PIN_SPEED_FAST;
 
 	gpio_periClockControl(GPIOB, ENABLE);
 	gpio_init(&gpioLedHandle);

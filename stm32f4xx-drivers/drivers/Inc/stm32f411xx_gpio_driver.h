@@ -32,7 +32,7 @@ typedef struct {
 typedef struct {
 
 	GPIO_RegDef_t *gpioPort;
-	GPIO_PinConfig_t *gpioPinCfg;
+	GPIO_PinConfig_t gpioPinCfg;
 
 } GPIO_Handle_t;
 
