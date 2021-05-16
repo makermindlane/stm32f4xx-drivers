@@ -156,6 +156,54 @@ void spi_receiveData(SPI_RegDef_t *spiReg, uint8_t *rxBuffer, uint32_t len) {
 
 
 /*
+ * SPI peripheral enable/disable
+ */
+void spi_peripheralControl(SPI_RegDef_t *spiReg, uint8_t enOrDi) {
+
+	if (enOrDi == ENABLE) {
+		// set SPE bit, i.e., enable SPI peripheral
+		spiReg->CR1 |= (1 << SPI_CR1_SPE);
+	} else {
+		// clear SPE bit i.e., disable SPI peripheral
+		spiReg->CR1 &= ~(1 << SPI_CR1_SPE);
+	}
+
+}
+
+
+/*
+ * SPI SSI config
+ */
+void spi_ssiConfig(SPI_RegDef_t *spiReg, uint8_t enOrDi) {
+
+	if (enOrDi == ENABLE) {
+		// set SSI bit, i.e., internal slave select
+		spiReg->CR1 |= (1 << SPI_CR1_SSI);
+	} else {
+		// clear SSI bit i.e., internal slave select
+		spiReg->CR1 &= ~(1 << SPI_CR1_SSI);
+	}
+
+}
+
+
+/*
+ * SPI SSI config
+ */
+void spi_ssoeConfig(SPI_RegDef_t *spiReg, uint8_t enOrDi) {
+
+	if (enOrDi == ENABLE) {
+		// set SSI bit, i.e., internal slave select
+		spiReg->CR2 |= (1 << SPI_CR2_SSOE);
+	} else {
+		// clear SSI bit i.e., internal slave select
+		spiReg->CR2 &= ~(1 << SPI_CR2_SSOE);
+	}
+
+}
+
+
+/*
  * IRQ configuration and ISR handling
  */
 void spi_irqInterruptConfig(uint8_t irqNumber, uint8_t enOrDi) {

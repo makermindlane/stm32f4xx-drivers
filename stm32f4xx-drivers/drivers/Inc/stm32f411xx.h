@@ -226,7 +226,7 @@ typedef struct {
 typedef struct {
 
 	volatile uint32_t CR1;
-	uint32_t RESERVED;
+	volatile uint32_t CR2;
 	volatile uint32_t SR;
 	volatile uint32_t DR;
 	volatile uint32_t CRCPR;
@@ -432,9 +432,15 @@ typedef struct {
 #define SPI_CR1_CPOL						1
 #define SPI_CR1_MSTR						2
 #define SPI_CR1_BR							3
+#define SPI_CR1_SPE							6
+#define SPI_CR1_LSBFIRST					7
+#define SPI_CR1_SSI							8
 #define SPI_CR1_SSM							9
 #define SPI_CR1_RXONLY						10
 #define SPI_CR1_DFF							11
+#define SPI_CR1_CRCNEXT						12
+#define SPI_CR1_CRCEN						13
+#define SPI_CR1_BIDIOE						14
 #define SPI_CR1_BIDIMODE					15
 
 
