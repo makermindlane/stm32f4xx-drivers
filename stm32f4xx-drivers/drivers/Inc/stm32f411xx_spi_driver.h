@@ -120,6 +120,24 @@ void spi_receiveData(SPI_RegDef_t *spiReg, uint8_t *rxBuffer, uint32_t len);
 
 
 /*
+ * SPI peripheral enable/disable
+ */
+void spi_peripheralControl(SPI_RegDef_t *spiReg, uint8_t enOrDi);
+
+
+/*
+ * SPI SSI config
+ */
+void spi_ssiConfig(SPI_RegDef_t *spiReg, uint8_t enOrDi);
+
+
+/*
+ * SPI SSI config
+ */
+void spi_ssoeConfig(SPI_RegDef_t *spiReg, uint8_t enOrDi);
+
+
+/*
  * IRQ configuration and ISR handling
  */
 void spi_irqInterruptConfig(uint8_t irqNumber, uint8_t enOrDi);
