@@ -113,9 +113,14 @@ void spi_deInit(SPI_RegDef_t *spiReg);
 
 
 /*
- * Data send and receive
+ * Send data
  */
 void spi_sendData(SPI_RegDef_t *spiReg, uint8_t *txBuffer, uint32_t len);
+
+
+/*
+ * Receive data
+ */
 void spi_receiveData(SPI_RegDef_t *spiReg, uint8_t *rxBuffer, uint32_t len);
 
 
