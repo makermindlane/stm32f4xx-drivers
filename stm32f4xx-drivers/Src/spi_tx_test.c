@@ -63,6 +63,21 @@ void spi2Init() {
 }
 
 
+void buttonInit() {
+	GPIO_Handle_t buttonHandle;
+
+	buttonHandle.gpioPort = GPIOB;
+
+	buttonHandle.gpioPinCfg.gpioPinMode = GPIO_PIN_MODE_IN;
+	buttonHandle.gpioPinCfg.gpioPinNumber = GPIO_PIN_NO_4;
+	buttonHandle.gpioPinCfg.gpioPinOPType = GPIO_PIN_OPTYPE_PP;
+	buttonHandle.gpioPinCfg.gpioPinPuPd = GPIO_PIN_PUPD_PU;
+	buttonHandle.gpioPinCfg.gpioPinSpeed = GPIO_PIN_SPEED_FAST;
+
+	gpio_init(&buttonHandle);
+}
+
+
 int main() {
 
 	char data[] = "Hello world";
@@ -70,11 +85,34 @@ int main() {
 	spi2GpioInit();
 	spi2Init();
 
-	spi_peripheralControl(SPI2, ENABLE);
-	spi_sendData(SPI2, (uint8_t*) data, strlen(data));
-	spi_peripheralControl(SPI2, DISABLE);
+	buttonInit();
 
-	while (1);
+	while (1) {
+
+		// wait here until button goes down
+		while (!(gpio_readFromInputPin(GPIOB, GPIO_PIN_NO_4)));
+
+		/*
+		 * SSOE = 1:
+		 * 		SPE = 1, hardware makes NSS = 0 and selects the slave.
+		 * 		SPE = 0, hardware makes NSS = 1 and doesn't selects the slave.
+		 * SSOE = 0:
+		 * 		This is a multi-master mode and we are not concerned about it right now.
+		 */
+		spi_ssoeConfig(SPI2, ENABLE);
+		spi_peripheralControl(SPI2, ENABLE);
+
+		uint8_t dataLen = strlen(data);
+		// first send length of data
+		spi_sendData(SPI2, &dataLen, 1);
+		// send the actual data;
+		spi_sendData(SPI2, (uint8_t*) data, dataLen);
+		// before closing the spi check if spi is busy in any communication
+		while (CHECK_BIT_FOR_SET(SPI2->SR, SPI_SR_BSY));
+		// close the spi communication
+		spi_peripheralControl(SPI2, DISABLE);
+	}
+
 
 	return 0;
 
