@@ -150,7 +150,27 @@ void spi_sendData(SPI_RegDef_t *spiReg, uint8_t *txBuffer, uint32_t len) {
 }
 
 
+/*
+ * Receive data
+ */
 void spi_receiveData(SPI_RegDef_t *spiReg, uint8_t *rxBuffer, uint32_t len) {
+
+	while (len > 0) {
+
+		// wait until data becomes available in hardware rx buffer
+		while (!(CHECK_BIT_FOR_SET(spiReg->SR, SPI_SR_RXNE)));
+		if (spiReg->CR1 & (1 << SPI_CR1_DFF)) {
+			// data is 16 bit wide
+			*((uint16_t*) rxBuffer) = spiReg->DR;
+			(uint16_t*) rxBuffer++;
+			len -= 2;
+		} else {
+			// data is 8 bit wide
+			*rxBuffer = spiReg->DR;
+			rxBuffer++;
+			len--;
+		}
+	}
 
 }
 
