@@ -18,7 +18,7 @@ typedef struct {
 	uint8_t cpha;							/* Possible values from @SPI_CPHA */
 	uint8_t ssm;							/* Possible values from @SPI_SSM */
 
-} SPI_PinConfig_t;
+} SPI_Config_t;
 
 
 /*
@@ -27,7 +27,13 @@ typedef struct {
 typedef struct {
 
 	SPI_RegDef_t *spiReg;
-	SPI_PinConfig_t spiPinCfg;
+	SPI_Config_t spiCfg;
+	uint8_t *txBuffer;
+	uint8_t *rxBuffer;
+	uint32_t txLen;
+	uint32_t rxLen;
+	uint8_t txState;
+	uint8_t rxState;
 
 } SPI_Handle_t;
 
@@ -94,6 +100,22 @@ typedef struct {
 #define SPI_SSM_EN								1
 
 
+/*
+ * SPI application states
+ */
+#define SPI_STATE_READY							0
+#define SPI_STATE_BUSY_IN_RX					1
+#define SPI_STATE_BUSY_IN_TX					2
+
+
+/*
+ * SPI application events
+ */
+#define SPI_EVENT_TX_CMPLT						1
+#define SPI_EVENT_RX_CMPLT						2
+#define SPI_EVENT_OVR_ERR						3
+#define SPI_EVENT_CRC_ERR						4
+
 
 /*
  ************************************ Driver APIs **************************************
@@ -125,6 +147,17 @@ void spi_receiveData(SPI_RegDef_t *spiReg, uint8_t *rxBuffer, uint32_t len);
 
 
 /*
+ * Send data interrupt api
+ */
+uint8_t spi_sendDataIt(SPI_Handle_t *spiHandle, uint8_t *txBuffer, uint32_t len);
+
+
+/*
+ * Receive data interrupt api
+ */
+uint8_t spi_receiveDataIt(SPI_Handle_t *spiHandle, uint8_t *rxBuffer, uint32_t len);
+
+/*
  * SPI peripheral enable/disable
  */
 void spi_peripheralControl(SPI_RegDef_t *spiReg, uint8_t enOrDi);
@@ -140,6 +173,30 @@ void spi_ssiConfig(SPI_RegDef_t *spiReg, uint8_t enOrDi);
  * SPI SSI config
  */
 void spi_ssoeConfig(SPI_RegDef_t *spiReg, uint8_t enOrDi);
+
+
+/*
+ * Clear overrun error flag
+ */
+void spi_clearOvrFlag(SPI_RegDef_t *spiReg);
+
+
+/*
+ * Close spi transmission
+ */
+void spi_closeTransmission(SPI_Handle_t *spiHandle);
+
+
+/*
+ * Close spi reception
+ */
+void spi_closeReception(SPI_Handle_t *spiHandle);
+
+
+/*
+ * Application event callback
+ */
+void spi_appEventCallback(SPI_Handle_t *spiHandle, uint8_t appEvent);
 
 
 /*

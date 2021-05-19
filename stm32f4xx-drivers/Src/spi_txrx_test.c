@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdio.h>
 
 #include "stm32f411xx_spi_driver.h"
 #include "stm32f411xx_gpio_driver.h"
@@ -36,6 +37,8 @@
 #define FAILURE					0
 
 
+extern void initialise_monitor_handles();
+
 
 /**********************************************************************************************************************
  * 												Functions prototypes
@@ -53,6 +56,8 @@ uint8_t spiSendReadCmd(SPI_RegDef_t *spi, uint8_t cmdCode, uint8_t args[], uint8
 
 
 int main() {
+
+	initialise_monitor_handles();
 
 	uint8_t cmdCode;
 	uint8_t args[2];
@@ -109,7 +114,7 @@ int main() {
 
 			spi_sendData(SPI2, &dummyWrite, 1);
 			spi_receiveData(SPI2, &analogRead, 1);
-			//printf("COMMAND_SENSOR_READ %d\n", analogRead);
+			printf("COMMAND_SENSOR_READ %d\n", analogRead);
 
 		} else {
 			// handle error code (right now its just a simple infinite while loop to help in debugging
@@ -119,16 +124,15 @@ int main() {
 		// 3. Led read command
 		cmdCode = CMD_LED_READ;
 		args[0] = LED_PIN;
-		uint8_t ledRead;
+		uint8_t ledStatus;
 		if (spiSendCmd(SPI2, cmdCode) == SUCCESS) {
 
 			spi_sendData(SPI2, args, 1);
 			spi_receiveData(SPI2, &dummyRead, 1);
 			delay();
-			uint8_t ledRead;
 			spi_sendData(SPI2, &dummyWrite, 1);
-			spi_receiveData(SPI2, &ledRead, 1);
-			//printf("COMMAND_READ_LED %d\n",ledRead);
+			spi_receiveData(SPI2, &ledStatus, 1);
+			printf("COMMAND_READ_LED %d\n",ledStatus);
 
 		} else {
 			// handle error code (right now its just a simple infinite while loop to help in debugging
@@ -148,7 +152,7 @@ int main() {
 				spi_sendData(SPI2, &msg[i], 1);
 				spi_receiveData(SPI2, &dummyRead, 1);
 			}
-			//printf("COMMAND_PRINT Executed \n");
+			printf("COMMAND_PRINT Executed \n");
 		} else {
 			// handle error code (right now its just a simple infinite while loop to help in debugging
 			while (1);
@@ -223,13 +227,13 @@ void spi2Init() {
 
 //	memset(&spiHandle.spiPinCfg, 0, sizeof(spiHandle.spiPinCfg));
 
-	spiHandle.spiPinCfg.busCfg = SPI_BUS_CFG_FD;
-	spiHandle.spiPinCfg.cpha = SPI_CPHA_LOW;
-	spiHandle.spiPinCfg.cpol = SPI_CPOL_LOW;
-	spiHandle.spiPinCfg.deviceMode = SPI_DEVICE_MODE_MASTER;
-	spiHandle.spiPinCfg.dff = SPI_DFF_8_BIT;
-	spiHandle.spiPinCfg.sClkSpeed = SPI_SERIAL_CLK_SPEED_DIV_8;
-	spiHandle.spiPinCfg.ssm = SPI_SSM_DI;
+	spiHandle.spiCfg.busCfg = SPI_BUS_CFG_FD;
+	spiHandle.spiCfg.cpha = SPI_CPHA_LOW;
+	spiHandle.spiCfg.cpol = SPI_CPOL_LOW;
+	spiHandle.spiCfg.deviceMode = SPI_DEVICE_MODE_MASTER;
+	spiHandle.spiCfg.dff = SPI_DFF_8_BIT;
+	spiHandle.spiCfg.sClkSpeed = SPI_SERIAL_CLK_SPEED_DIV_8;
+	spiHandle.spiCfg.ssm = SPI_SSM_DI;
 
 	spi_init(&spiHandle);
 }
