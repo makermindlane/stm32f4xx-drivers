@@ -2,6 +2,13 @@
 
 
 /*
+ * AHB and APB1 prescaler values
+ */
+int16_t ahbPrescaler[8] = {2,4,8,16,64,128,256,512};
+uint8_t apb1Prescaler[4] = { 2, 4 , 8, 16};
+
+
+/*
  * Peripheral clock setup
  */
 void i2c_periClockControl(I2C_RegDef_t *i2c, uint8_t enOrDi) {
@@ -31,6 +38,10 @@ void i2c_periClockControl(I2C_RegDef_t *i2c, uint8_t enOrDi) {
  * I2C Init
  */
 void i2c_init(I2C_Handle_t *i2cHandle) {
+
+	uint32_t tempReg = 0;
+
+	tempReg |= i2cHandle->i2cCfg.ackCtrl << I2C_CR1_ACK;
 
 }
 
@@ -128,8 +139,57 @@ void i2c_irqPriorityConfig(uint8_t irqNumber, uint32_t irqPriority) {
 
 
 
+/**********************************************************************************************************************
+ * 												Helper functions
+ *********************************************************************************************************************/
+
+/*
+ * Get the PLL clock value (as of now it does nothing)
+ */
+static uint32_t rccGetPllOutputClk() {
+	return 16000000;
+}
 
 
+/*
+ * Get the peripheral clock 1 value
+ */
+static uint32_t rccGetPclk1Value() {
+
+	uint32_t sysClk, pClk1;
+	uint8_t clkSrc, temp, ahbPres, apb1Pres;
+	// get the clock source
+	clkSrc = ((RCC->CFGR >> 2) & 0x3);
+
+	if (clkSrc == 0) {
+		// HSI is selected as system clock source
+		sysClk = 16000000;
+	} else if (clkSrc == 1) {
+		// HSE is selected as system clock source
+		sysClk = 8000000;
+	} else if (clkSrc == 2) {
+		// PLL is selected as system clock source
+		sysClk = rccGetPllOutputClk();
+	}
+
+	// for ahb prescaler
+	temp = ((RCC->CFGR >> 4) & 0xF);
+	if (temp < 8) {
+		ahbPres = 1;
+	} else {
+		ahbPres = ahbPrescaler[temp - 8];
+	}
+
+	// for apb1 prescaler
+	temp = ((RCC->CFGR >> 10) & 0x7);
+	if (temp < 4) {
+		apb1Pres = apb1Prescaler[temp - 4];
+	}
+
+	pClk1 = (sysClk / ahbPres) / apb1Pres;
+
+	return pClk1;
+}
 
 
 
