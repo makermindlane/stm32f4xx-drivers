@@ -186,30 +186,30 @@ void spi2GpioInit() {
 
 	GPIO_Handle_t spiGpioHandle;
 
-	spiGpioHandle.gpioPort = GPIOB;
+	spiGpioHandle.gpio = GPIOB;
 
-//	memset(&spiGpioHandle.gpioPinCfg, 0, sizeof(spiGpioHandle.gpioPinCfg));
+//	memset(&spiGpioHandle.pinCfg, 0, sizeof(spiGpioHandle.pinCfg));
 
-	spiGpioHandle.gpioPinCfg.gpioPinAF = GPIO_PIN_AF_5;
-	spiGpioHandle.gpioPinCfg.gpioPinMode = GPIO_PIN_MODE_AF;
-	spiGpioHandle.gpioPinCfg.gpioPinOPType = GPIO_PIN_OPTYPE_PP;
-	spiGpioHandle.gpioPinCfg.gpioPinPuPd = GPIO_PIN_PUPD_NO;
-	spiGpioHandle.gpioPinCfg.gpioPinSpeed = GPIO_PIN_SPEED_FAST;
+	spiGpioHandle.pinCfg.pinAF = GPIO_PIN_AF_5;
+	spiGpioHandle.pinCfg.pinMode = GPIO_PIN_MODE_AF;
+	spiGpioHandle.pinCfg.pinOPType = GPIO_PIN_OPTYPE_PP;
+	spiGpioHandle.pinCfg.pinPuPd = GPIO_PIN_PUPD_NO;
+	spiGpioHandle.pinCfg.pinSpeed = GPIO_PIN_SPEED_FAST;
 
 	// set MOSI pin
-	spiGpioHandle.gpioPinCfg.gpioPinNumber = GPIO_PIN_NO_15;
+	spiGpioHandle.pinCfg.pinNumber = GPIO_PIN_NO_15;
 	gpio_init(&spiGpioHandle);
 
 	// set MISO pin
-	spiGpioHandle.gpioPinCfg.gpioPinNumber = GPIO_PIN_NO_14;
+	spiGpioHandle.pinCfg.pinNumber = GPIO_PIN_NO_14;
 	gpio_init(&spiGpioHandle);
 
 	// set SCLK pin
-	spiGpioHandle.gpioPinCfg.gpioPinNumber = GPIO_PIN_NO_13;
+	spiGpioHandle.pinCfg.pinNumber = GPIO_PIN_NO_13;
 	gpio_init(&spiGpioHandle);
 
 	// set NSS pin
-	spiGpioHandle.gpioPinCfg.gpioPinNumber = GPIO_PIN_NO_12;
+	spiGpioHandle.pinCfg.pinNumber = GPIO_PIN_NO_12;
 	gpio_init(&spiGpioHandle);
 
 }
@@ -223,7 +223,7 @@ void delay() {
 void spi2Init() {
 	SPI_Handle_t spiHandle;
 
-	spiHandle.spiReg = SPI2;
+	spiHandle.spi = SPI2;
 
 //	memset(&spiHandle.spiPinCfg, 0, sizeof(spiHandle.spiPinCfg));
 
@@ -242,13 +242,13 @@ void spi2Init() {
 void buttonInit() {
 	GPIO_Handle_t buttonHandle;
 
-	buttonHandle.gpioPort = GPIOB;
+	buttonHandle.gpio = GPIOB;
 
-	buttonHandle.gpioPinCfg.gpioPinMode = GPIO_PIN_MODE_IN;
-	buttonHandle.gpioPinCfg.gpioPinNumber = GPIO_PIN_NO_4;
-	buttonHandle.gpioPinCfg.gpioPinOPType = GPIO_PIN_OPTYPE_PP;
-	buttonHandle.gpioPinCfg.gpioPinPuPd = GPIO_PIN_PUPD_PU;
-	buttonHandle.gpioPinCfg.gpioPinSpeed = GPIO_PIN_SPEED_FAST;
+	buttonHandle.pinCfg.pinMode = GPIO_PIN_MODE_IN;
+	buttonHandle.pinCfg.pinNumber = GPIO_PIN_NO_4;
+	buttonHandle.pinCfg.pinOPType = GPIO_PIN_OPTYPE_PP;
+	buttonHandle.pinCfg.pinPuPd = GPIO_PIN_PUPD_PU;
+	buttonHandle.pinCfg.pinSpeed = GPIO_PIN_SPEED_FAST;
 
 	gpio_init(&buttonHandle);
 }

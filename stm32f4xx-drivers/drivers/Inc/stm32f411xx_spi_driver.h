@@ -26,7 +26,7 @@ typedef struct {
  */
 typedef struct {
 
-	SPI_RegDef_t *spiReg;
+	SPI_RegDef_t *spi;
 	SPI_Config_t spiCfg;
 	uint8_t *txBuffer;
 	uint8_t *rxBuffer;
@@ -124,26 +124,26 @@ typedef struct {
 /*
  * Peripheral clock setup
  */
-void spi_periClockControl(SPI_RegDef_t *spiReg, uint8_t enOrDi);
+void spi_periClockControl(SPI_RegDef_t *spi, uint8_t enOrDi);
 
 
 /*
  * Init and De Init
  */
 void spi_init(SPI_Handle_t *spiHandle);
-void spi_deInit(SPI_RegDef_t *spiReg);
+void spi_deInit(SPI_RegDef_t *spi);
 
 
 /*
  * Send data
  */
-void spi_sendData(SPI_RegDef_t *spiReg, uint8_t *txBuffer, uint32_t len);
+void spi_sendData(SPI_RegDef_t *spi, uint8_t *txBuffer, uint32_t len);
 
 
 /*
  * Receive data
  */
-void spi_receiveData(SPI_RegDef_t *spiReg, uint8_t *rxBuffer, uint32_t len);
+void spi_receiveData(SPI_RegDef_t *spi, uint8_t *rxBuffer, uint32_t len);
 
 
 /*
@@ -160,25 +160,25 @@ uint8_t spi_receiveDataIt(SPI_Handle_t *spiHandle, uint8_t *rxBuffer, uint32_t l
 /*
  * SPI peripheral enable/disable
  */
-void spi_peripheralControl(SPI_RegDef_t *spiReg, uint8_t enOrDi);
+void spi_peripheralControl(SPI_RegDef_t *spi, uint8_t enOrDi);
 
 
 /*
  * SPI SSI config
  */
-void spi_ssiConfig(SPI_RegDef_t *spiReg, uint8_t enOrDi);
+void spi_ssiConfig(SPI_RegDef_t *spi, uint8_t enOrDi);
 
 
 /*
  * SPI SSI config
  */
-void spi_ssoeConfig(SPI_RegDef_t *spiReg, uint8_t enOrDi);
+void spi_ssoeConfig(SPI_RegDef_t *spi, uint8_t enOrDi);
 
 
 /*
  * Clear overrun error flag
  */
-void spi_clearOvrFlag(SPI_RegDef_t *spiReg);
+void spi_clearOvrFlag(SPI_RegDef_t *spi);
 
 
 /*

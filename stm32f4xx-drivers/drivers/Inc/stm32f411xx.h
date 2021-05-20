@@ -614,7 +614,7 @@ typedef struct {
  * Returns the port code for the given GPIOx base address
  */
 #define GPIO_BASEADDR_TO_PORTCODE(p)		((p == GPIOA)?0:\
-											 (p== GPIOB)?1:\
+											 (p == GPIOB)?1:\
 											 (p == GPIOC)?2:\
 											 (p == GPIOD)?3:\
 											 (p == GPIOE)?4:\
