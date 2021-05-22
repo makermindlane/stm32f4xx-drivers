@@ -1,6 +1,13 @@
 #include "stm32f411xx_i2c_driver.h"
 
 
+
+/**********************************************************************************************************************
+ * 												Functions prototypes
+ *********************************************************************************************************************/
+
+static uint32_t rccGetPclk1Value();
+
 /*
  * AHB and APB1 prescaler values
  */
@@ -41,7 +48,40 @@ void i2c_init(I2C_Handle_t *i2cHandle) {
 
 	uint32_t tempReg = 0;
 
+	// set ACK bit
 	tempReg |= i2cHandle->i2cCfg.ackCtrl << I2C_CR1_ACK;
+	i2cHandle->i2c->CR1 = tempReg;
+
+	// configure the FREQ bits
+	tempReg = 0;
+	tempReg = rccGetPclk1Value() / 1000000;
+	i2cHandle->i2c->CR2 = (tempReg & 0x3F);
+
+	// set device's own address
+	tempReg = i2cHandle->i2cCfg.deviceAddr << 1;
+	tempReg |= 1 << 14; 	// Don't know why but reference manual suggests to do it.
+	i2cHandle->i2c->OAR1 = tempReg;
+
+	// CCR calculations
+	uint16_t ccr = 0;
+	tempReg = 0;
+	if (i2cHandle->i2cCfg.sclSpeed <= I2C_SCL_SPEED_SM) {
+		// mode is standard mode
+		ccr = (rccGetPclk1Value() / (2 * i2cHandle->i2cCfg.sclSpeed));
+		tempReg |= (ccr & 0xFFF);
+	} else {
+		// mode is fast mode
+		tempReg |= (1 << I2C_CCR_FS);
+		tempReg |= (i2cHandle->i2cCfg.fmDutyCycle << I2C_CCR_DUTY);
+
+		if (i2cHandle->i2cCfg.fmDutyCycle == I2C_FM_DUTY_CYCLE_2) {
+			ccr = (rccGetPclk1Value() / (3 * i2cHandle->i2cCfg.sclSpeed));
+		} else {
+			ccr = (rccGetPclk1Value() / (25 * i2cHandle->i2cCfg.sclSpeed));
+		}
+		tempReg |= (ccr & 0xFFF);
+	}
+	i2cHandle->i2c->CCR = tempReg;
 
 }
 
