@@ -557,7 +557,7 @@ typedef struct {
 #define I2C_SR1_ADD10						3
 #define I2C_SR1_STOPF						4
 #define I2C_SR1_RxNE						6
-#define I2C_SR1_Tx							7
+#define I2C_SR1_TxE							7
 #define I2C_SR1_BERR						8
 #define I2C_SR1_ARLO						9
 #define I2C_SR1_AF							10
@@ -650,6 +650,8 @@ typedef struct {
 #define GPIO_PIN_RESET						RESET
 
 #define CHECK_BIT_FOR_SET(reg, bit)					((reg) & (1 << (bit)))
+#define WAIT_UNTIL_SET(reg, bit)					while (!CHECK_BIT_FOR_SET(reg, bit))
+#define WAIT_UNTIL_RESET(reg, bit)					while (CHECK_BIT_FOR_SET(reg, bit))
 
 /**********************************************************************************************************************
  *								END: Miscellaneous macros

@@ -3,10 +3,18 @@
 
 
 /**********************************************************************************************************************
- * 												Functions prototypes
+ * 												START: Functions prototypes
  *********************************************************************************************************************/
 
 static uint32_t rccGetPclk1Value();
+static void i2cGenerateStartCondition(I2C_RegDef_t * i2c);
+static void i2cGenerateStopCondition(I2C_RegDef_t * i2c);
+static void i2cExecuteAddressPhase(I2C_RegDef_t *i2c, uint8_t slaveAddr);
+static void i2cClearAddrFlag(I2C_RegDef_t *i2c);
+
+/**********************************************************************************************************************
+ * 												END: Functions prototypes
+ *********************************************************************************************************************/
 
 /*
  * AHB and APB1 prescaler values
@@ -83,6 +91,15 @@ void i2c_init(I2C_Handle_t *i2cHandle) {
 	}
 	i2cHandle->i2c->CCR = tempReg;
 
+	// TRISE configuration
+	if (i2cHandle->i2cCfg.sclSpeed <= I2C_SCL_SPEED_SM) {
+		// mode is standard mode
+		tempReg = (rccGetPclk1Value() / 1000000U) + 1;
+	} else {
+		// mode is fast mode
+		tempReg = ((rccGetPclk1Value() * 300) / 1000000000U) + 1;
+	}
+	i2cHandle->i2c->TRISE = (tempReg & 0x3F);
 }
 
 
@@ -99,6 +116,45 @@ void i2c_deInit(I2C_RegDef_t *i2c) {
 		I2C3_REG_RESET();
 	}
 
+}
+
+
+/*
+ * Master send api
+ */
+void i2c_masterSendData(I2C_Handle_t *i2cHandle, uint8_t *txBuffer, uint32_t len, uint8_t slaveAddr) {
+
+	// generate start condition
+	i2cGenerateStartCondition(i2cHandle->i2c);
+
+	// wait until SB bit in SR1 register is set. This indicates that start condition has been generated
+	WAIT_UNTIL_SET(i2cHandle->i2c->SR1, I2C_SR1_SB);
+
+	// send the address of the slave with read/write bit
+	i2cExecuteAddressPhase(i2cHandle->i2c, slaveAddr);
+
+	// wait until ADDR bit is set in SR1 register, indicating end of address transmission.
+	WAIT_UNTIL_SET(i2cHandle->i2c->SR1, I2C_SR1_ADDR);
+
+	// clear the ADDR bit
+	i2cClearAddrFlag(i2cHandle->i2c);
+
+	// send data until len becomes 0
+	while (len > 0) {
+		// wait until TxE bit in SR1 register is set, indicating data register is empty and can be written
+		WAIT_UNTIL_SET(i2cHandle->i2c->SR1, I2C_SR1_TxE);
+		i2cHandle->i2c->DR = *txBuffer;
+		txBuffer++;
+		len--;
+	}
+
+	// wait until TxE and BTF bits in SR1 register are set, indicating data register is empty and data byte transfer
+	// succeeded. After which only, stop condition can be generated.
+	WAIT_UNTIL_SET(i2cHandle->i2c->SR1, I2C_SR1_TxE);
+	WAIT_UNTIL_SET(i2cHandle->i2c->SR1, I2C_SR1_BTF);
+
+	// generate the stop condition
+	i2cGenerateStopCondition(i2cHandle->i2c);
 }
 
 
@@ -180,7 +236,7 @@ void i2c_irqPriorityConfig(uint8_t irqNumber, uint32_t irqPriority) {
 
 
 /**********************************************************************************************************************
- * 												Helper functions
+ * 												START: Helper functions
  *********************************************************************************************************************/
 
 /*
@@ -232,9 +288,43 @@ static uint32_t rccGetPclk1Value() {
 }
 
 
+static void i2cGenerateStartCondition(I2C_RegDef_t * i2c) {
+
+	i2c->CR1 |= (1 << I2C_CR1_START);
+
+}
 
 
+static void i2cGenerateStopCondition(I2C_RegDef_t * i2c) {
 
+	i2c->CR1 |= (1 << I2C_CR1_STOP);
+
+}
+
+
+static void i2cExecuteAddressPhase(I2C_RegDef_t *i2c, uint8_t slaveAddr) {
+
+	// make room for read/write bit (zeroth bit)
+	slaveAddr = slaveAddr << 1;
+	// clear the zeroth bit to indicate write operation
+	slaveAddr &= ~(1);
+	// put the slave address + write bit into data register (DR)
+	i2c->DR = slaveAddr;
+}
+
+
+static void i2cClearAddrFlag(I2C_RegDef_t *i2c) {
+
+	// reading SR1 and SR2 registers clears the ADDR bit
+	uint32_t dummyRead = i2c->SR1;
+	dummyRead = i2c->SR2;
+	(void) dummyRead;
+
+}
+
+/**********************************************************************************************************************
+ * 												END: Helper functions
+ *********************************************************************************************************************/
 
 
 
