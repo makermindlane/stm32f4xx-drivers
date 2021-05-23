@@ -95,7 +95,7 @@ void i2c_deInit(I2C_RegDef_t *i2c);
 
 
 /*
- * Master send api
+ * Master send data
  */
 void i2c_masterSendData(I2C_Handle_t *i2cHandle, uint8_t *txBuffer, uint32_t len, uint8_t slaveAddr);
 
@@ -104,6 +104,18 @@ void i2c_masterSendData(I2C_Handle_t *i2cHandle, uint8_t *txBuffer, uint32_t len
  * Master receive data
  */
 void i2c_masterReceiveData(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer, uint32_t len, uint8_t slaveAddr);
+
+
+/*
+ * Master send data interrupt api
+ */
+uint8_t i2c_masterSendDataIt(I2C_Handle_t *i2cHandle, uint8_t *txBuffer, uint32_t len, uint8_t slaveAddr);
+
+
+/*
+ * Master receive data interrupt api
+ */
+uint8_t i2c_masterReceiveDataIt(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer, uint32_t len, uint8_t slaveAddr);
 
 
 /*
