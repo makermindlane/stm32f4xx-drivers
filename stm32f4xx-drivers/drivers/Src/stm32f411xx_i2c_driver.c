@@ -185,7 +185,7 @@ void i2c_masterReceiveData(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer, uint32_t 
 		i2cClearAddrFlag(i2cHandle->i2c);
 		// wait until RxNE bit is set in SR1 register, indicating data register is not empty
 		WAIT_UNTIL_SET(i2cHandle->i2c->SR1, I2C_SR1_RxNE);
-		// read the data into rx buffer
+		// read data into rx buffer
 		*rxBuffer = i2cHandle->i2c->DR;
 
 		return;
@@ -201,7 +201,7 @@ void i2c_masterReceiveData(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer, uint32_t 
 				// generate stop condition
 				i2cGenerateStopCondition(i2cHandle->i2c);
 			}
-			// read the data into rx buffer
+			// read data into rx buffer
 			*rxBuffer = i2cHandle->i2c->DR;
 			// increment the rx buffer address
 			rxBuffer++;
@@ -328,21 +328,16 @@ static uint32_t rccGetPclk1Value() {
 
 
 static void i2cGenerateStartCondition(I2C_RegDef_t * i2c) {
-
 	i2c->CR1 |= (1 << I2C_CR1_START);
-
 }
 
 
 static void i2cGenerateStopCondition(I2C_RegDef_t * i2c) {
-
 	i2c->CR1 |= (1 << I2C_CR1_STOP);
-
 }
 
 
 static void i2cExecuteAddressPhase(I2C_RegDef_t *i2c, uint8_t slaveAddr, uint8_t isRead) {
-
 	// make room for read/write bit (zeroth bit)
 	slaveAddr = slaveAddr << 1;
 	if (isRead) {
@@ -358,12 +353,10 @@ static void i2cExecuteAddressPhase(I2C_RegDef_t *i2c, uint8_t slaveAddr, uint8_t
 
 
 static void i2cClearAddrFlag(I2C_RegDef_t *i2c) {
-
 	// reading SR1 and SR2 registers clears the ADDR bit
 	uint32_t dummyRead = i2c->SR1;
 	dummyRead = i2c->SR2;
 	(void) dummyRead;
-
 }
 
 

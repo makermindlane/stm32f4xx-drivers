@@ -9,10 +9,10 @@
  */
 typedef struct {
 
-	uint32_t sclSpeed;									/* Possible values from @I2C_SCL_SPEED*/
+	uint32_t sclSpeed;									/* Possible values from @I2C_SCL_SPEED */
 	uint8_t deviceAddr;
-	uint8_t ackCtrl;									/* Possible values from @I2C_ACK_CTRL*/
-	uint8_t fmDutyCycle;								/* Possible values from @I2C_FM_DUTY_CYCLE*/
+	uint8_t ackCtrl;									/* Possible values from @I2C_ACK_CTRL */
+	uint8_t fmDutyCycle;								/* Possible values from @I2C_FM_DUTY_CYCLE */
 
 } I2C_Config_t;
 
@@ -24,6 +24,14 @@ typedef struct {
 
 	I2C_RegDef_t *i2c;
 	I2C_Config_t i2cCfg;
+	uint8_t *txBuffer;
+	uint8_t *rxBuffer;
+	uint32_t txLen;
+	uint32_t rxLen;
+	uint8_t txRxState;									/* Possible values from @I2C_STATE */
+	uint8_t devAddr;
+	uint32_t rxSize;
+	uint8_t repeatedStart;
 
 } I2C_Handle_t;
 
@@ -53,8 +61,16 @@ typedef struct {
 /*
  * Read and write indication macros
  */
-#define I2C_MASTER_READ										1
-#define I2C_MASTER_WRITE									0
+#define I2C_MASTER_READ									1
+#define I2C_MASTER_WRITE								0
+
+
+/*
+ * @I2C_STATE
+ */
+#define I2C_STATE_READY									0
+#define I2C_STATE_BUSY_IN_RX							1
+#define I2C_STATE_BUSY_IN_TX							2
 
 /**********************************************************************************************************************
  * 													Driver APIs
