@@ -235,10 +235,10 @@ uint8_t i2c_masterReceiveDataIt(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer, uint
  */
 void i2c_peripheralControl(I2C_RegDef_t *i2c, uint8_t enOrDi) {
 	if (enOrDi == ENABLE) {
-		// set SPE bit, i.e., enable SPI peripheral
+		// set SPE bit, i.e., enable I2C peripheral
 		i2c->CR1 |= (1 << I2C_CR1_PE);
 	} else {
-		// clear SPE bit i.e., disable SPI peripheral
+		// clear SPE bit i.e., disable I2C peripheral
 		i2c->CR1 &= ~(1 << I2C_CR1_PE);
 	}
 }
