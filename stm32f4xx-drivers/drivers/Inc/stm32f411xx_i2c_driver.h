@@ -50,6 +50,12 @@ typedef struct {
 #define I2C_FM_DUTY_CYCLE_16_9							1
 
 
+/*
+ * Read and write indication macros
+ */
+#define I2C_MASTER_READ										1
+#define I2C_MASTER_WRITE									0
+
 /**********************************************************************************************************************
  * 													Driver APIs
  *********************************************************************************************************************/
@@ -76,6 +82,12 @@ void i2c_deInit(I2C_RegDef_t *i2c);
  * Master send api
  */
 void i2c_masterSendData(I2C_Handle_t *i2cHandle, uint8_t *txBuffer, uint32_t len, uint8_t slaveAddr);
+
+
+/*
+ * Master receive data
+ */
+void i2c_masterReceiveData(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer, uint32_t len, uint8_t slaveAddr);
 
 
 /*

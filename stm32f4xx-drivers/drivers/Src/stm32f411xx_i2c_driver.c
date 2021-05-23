@@ -9,8 +9,9 @@
 static uint32_t rccGetPclk1Value();
 static void i2cGenerateStartCondition(I2C_RegDef_t * i2c);
 static void i2cGenerateStopCondition(I2C_RegDef_t * i2c);
-static void i2cExecuteAddressPhase(I2C_RegDef_t *i2c, uint8_t slaveAddr);
+static void i2cExecuteAddressPhase(I2C_RegDef_t *i2c, uint8_t slaveAddr, uint8_t isRead);
 static void i2cClearAddrFlag(I2C_RegDef_t *i2c);
+static void i2cManageAck(I2C_RegDef_t *i2c, uint8_t isEnable);
 
 /**********************************************************************************************************************
  * 												END: Functions prototypes
@@ -131,7 +132,7 @@ void i2c_masterSendData(I2C_Handle_t *i2cHandle, uint8_t *txBuffer, uint32_t len
 	WAIT_UNTIL_SET(i2cHandle->i2c->SR1, I2C_SR1_SB);
 
 	// send the address of the slave with read/write bit
-	i2cExecuteAddressPhase(i2cHandle->i2c, slaveAddr);
+	i2cExecuteAddressPhase(i2cHandle->i2c, slaveAddr, I2C_MASTER_WRITE);
 
 	// wait until ADDR bit is set in SR1 register, indicating end of address transmission.
 	WAIT_UNTIL_SET(i2cHandle->i2c->SR1, I2C_SR1_ADDR);
@@ -159,10 +160,64 @@ void i2c_masterSendData(I2C_Handle_t *i2cHandle, uint8_t *txBuffer, uint32_t len
 
 
 /*
+ * Master receive data
+ */
+void i2c_masterReceiveData(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer, uint32_t len, uint8_t slaveAddr) {
+	// generate start condition
+	i2cGenerateStartCondition(i2cHandle->i2c);
+
+	// wait until SB bit in SR1 register is set. This indicates that start condition has been generated
+	WAIT_UNTIL_SET(i2cHandle->i2c->SR1, I2C_SR1_SB);
+
+	// send the address of the slave with read/write bit
+	i2cExecuteAddressPhase(i2cHandle->i2c, slaveAddr, I2C_MASTER_READ);
+
+	// wait until ADDR bit is set in SR1 register, indicating end of address transmission.
+	WAIT_UNTIL_SET(i2cHandle->i2c->SR1, I2C_SR1_ADDR);
+
+	// for 1 byte of data reception
+	if (len == 1) {
+		// disable the ACK
+		i2cManageAck(i2cHandle->i2c, I2C_ACK_CTRL_DISABLE);
+		// generate stop condition
+		i2cGenerateStopCondition(i2cHandle->i2c);
+		// clear the ADDR flag
+		i2cClearAddrFlag(i2cHandle->i2c);
+		// wait until RxNE bit is set in SR1 register, indicating data register is not empty
+		WAIT_UNTIL_SET(i2cHandle->i2c->SR1, I2C_SR1_RxNE);
+		// read the data into rx buffer
+		*rxBuffer = i2cHandle->i2c->DR;
+
+		return;
+	} else if (len > 1) {
+		// clear the ADDR flag
+		i2cClearAddrFlag(i2cHandle->i2c);
+		for (uint32_t i = len; i > 0; --i) {
+			// wait until RxNE bit is set in SR1 register, indicating data register is not empty
+			WAIT_UNTIL_SET(i2cHandle->i2c->SR1, I2C_SR1_RxNE);
+			if (i == 2) {
+				// disable ACK
+				i2cManageAck(i2cHandle->i2c, I2C_ACK_CTRL_DISABLE);
+				// generate stop condition
+				i2cGenerateStopCondition(i2cHandle->i2c);
+			}
+			// read the data into rx buffer
+			*rxBuffer = i2cHandle->i2c->DR;
+			// increment the rx buffer address
+			rxBuffer++;
+		}
+	}
+	// re-enable ACK
+	if (i2cHandle->i2cCfg.ackCtrl == I2C_ACK_CTRL_ENABLE) {
+		i2cManageAck(i2cHandle->i2c, I2C_ACK_CTRL_ENABLE);
+	}
+}
+
+
+/*
  * I2C peripheral enable/disable
  */
 void i2c_peripheralControl(I2C_RegDef_t *i2c, uint8_t enOrDi) {
-
 	if (enOrDi == ENABLE) {
 		// set SPE bit, i.e., enable SPI peripheral
 		i2c->CR1 |= (1 << I2C_CR1_PE);
@@ -170,7 +225,6 @@ void i2c_peripheralControl(I2C_RegDef_t *i2c, uint8_t enOrDi) {
 		// clear SPE bit i.e., disable SPI peripheral
 		i2c->CR1 &= ~(1 << I2C_CR1_PE);
 	}
-
 }
 
 
@@ -179,40 +233,25 @@ void i2c_peripheralControl(I2C_RegDef_t *i2c, uint8_t enOrDi) {
  * I2C irq interrupt config
  */
 void i2c_irqInterruptConfig(uint8_t irqNumber, uint8_t enOrDi) {
-
 	if (enOrDi == ENABLE) {
-
 		if (irqNumber <= 31) {
-
 			// program ISER0 register
 			*NVIC_ISER0 |= (1 << irqNumber);
-
 		} else if (irqNumber >= 32 && irqNumber <= 63) {
-
 			// program ISER1 register
 			*NVIC_ISER1 |= (1 << (irqNumber % 32));
-
 		} else if (irqNumber >= 64 && irqNumber <= 95) {
-
 			// program ISER2 register
 			*NVIC_ISER2 |= (1 << (irqNumber % 32));
-
 		}
-
 	} else {
-
 		if (irqNumber <= 31) {
-
 			// program ICER0 register
 			*NVIC_ICER0 |= (1 << irqNumber);
-
 		} else if (irqNumber >= 32 && irqNumber <= 63) {
-
 			// program ICER1 register
 			*NVIC_ICER1 |= (1 << (irqNumber % 32));
-
 		} else if (irqNumber >= 64 && irqNumber <= 95) {
-
 			// program ICER2 register
 			*NVIC_ICER2 |= (1 << (irqNumber % 32));
 		}
@@ -302,13 +341,18 @@ static void i2cGenerateStopCondition(I2C_RegDef_t * i2c) {
 }
 
 
-static void i2cExecuteAddressPhase(I2C_RegDef_t *i2c, uint8_t slaveAddr) {
+static void i2cExecuteAddressPhase(I2C_RegDef_t *i2c, uint8_t slaveAddr, uint8_t isRead) {
 
 	// make room for read/write bit (zeroth bit)
 	slaveAddr = slaveAddr << 1;
-	// clear the zeroth bit to indicate write operation
-	slaveAddr &= ~(1);
-	// put the slave address + write bit into data register (DR)
+	if (isRead) {
+		// set the zeroth bit to indicate read operation
+		slaveAddr |= 1;
+	} else {
+		// clear the zeroth bit to indicate write operation
+		slaveAddr &= ~(1);
+	}
+	// put the slave address + read/write bit into data register (DR)
 	i2c->DR = slaveAddr;
 }
 
@@ -320,6 +364,15 @@ static void i2cClearAddrFlag(I2C_RegDef_t *i2c) {
 	dummyRead = i2c->SR2;
 	(void) dummyRead;
 
+}
+
+
+static void i2cManageAck(I2C_RegDef_t *i2c, uint8_t isEnable) {
+	if (isEnable == I2C_ACK_CTRL_ENABLE) {
+		i2c->CR1 |= (1 << I2C_CR1_ACK);
+	} else {
+		i2c->CR1 &= ~(1 << I2C_CR1_ACK);
+	}
 }
 
 /**********************************************************************************************************************
