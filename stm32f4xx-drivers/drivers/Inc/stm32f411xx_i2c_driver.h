@@ -109,13 +109,13 @@ void i2c_masterReceiveData(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer, uint32_t 
 /*
  * Master send data interrupt api
  */
-uint8_t i2c_masterSendDataIt(I2C_Handle_t *i2cHandle, uint8_t *txBuffer, uint32_t len, uint8_t slaveAddr);
+uint8_t i2c_masterSendDataIt(I2C_Handle_t *i2cHandle, uint8_t *txBuffer, uint32_t len, uint8_t slaveAddr, uint8_t repeatedStart);
 
 
 /*
  * Master receive data interrupt api
  */
-uint8_t i2c_masterReceiveDataIt(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer, uint32_t len, uint8_t slaveAddr);
+uint8_t i2c_masterReceiveDataIt(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer, uint32_t len, uint8_t slaveAddr, uint8_t repeatedStart);
 
 
 /*
