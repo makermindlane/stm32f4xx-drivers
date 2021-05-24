@@ -656,9 +656,10 @@ typedef struct {
 #define GPIO_PIN_SET						SET
 #define GPIO_PIN_RESET						RESET
 
-#define CHECK_BIT_FOR_SET(reg, bit)					((reg) & (1 << (bit)))
-#define WAIT_UNTIL_SET(reg, bit)					while (!CHECK_BIT_FOR_SET(reg, bit))
-#define WAIT_UNTIL_RESET(reg, bit)					while (CHECK_BIT_FOR_SET(reg, bit))
+#define IS_BIT_SET(reg, bit)				((reg) & (1 << (bit)))
+#define IS_BIT_RESET(reg, bit)				(!IS_BIT_SET(reg, bit))
+#define WAIT_UNTIL_SET(reg, bit)			while (!IS_BIT_SET(reg, bit))
+#define WAIT_UNTIL_RESET(reg, bit)			while (IS_BIT_SET(reg, bit))
 
 /**********************************************************************************************************************
  *								END: Miscellaneous macros

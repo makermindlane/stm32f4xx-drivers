@@ -4,9 +4,9 @@
 /**********************************************************************************************************************
  *						 						Function prototypes
  **********************************************************************************************************************/
-static void spiTxeIntHandle(SPI_Handle_t *spiHandle);
-static void spiRxneIntHandle(SPI_Handle_t *spiHandle);
-static void spiOvrErrIntHandle(SPI_Handle_t *spiHandle);
+static void spiTxeItHandle(SPI_Handle_t *spiHandle);
+static void spiRxneItHandle(SPI_Handle_t *spiHandle);
+static void spiOvrErrItHandle(SPI_Handle_t *spiHandle);
 
 
 
@@ -121,7 +121,7 @@ void spi_sendData(SPI_RegDef_t *spiReg, uint8_t *txBuffer, uint32_t len) {
 
 	while (len > 0) {
 
-		while (!(CHECK_BIT_FOR_SET(spiReg->SR, SPI_SR_TXE)));
+		while (!(IS_BIT_SET(spiReg->SR, SPI_SR_TXE)));
 
 		if (spiReg->CR1 & (1 << SPI_CR1_DFF)) {
 			// Data is 16 bit wide
@@ -147,7 +147,7 @@ void spi_receiveData(SPI_RegDef_t *spiReg, uint8_t *rxBuffer, uint32_t len) {
 	while (len > 0) {
 
 		// wait until data becomes available in hardware rx buffer
-		while (!(CHECK_BIT_FOR_SET(spiReg->SR, SPI_SR_RXNE)));
+		while (!(IS_BIT_SET(spiReg->SR, SPI_SR_RXNE)));
 		if (spiReg->CR1 & (1 << SPI_CR1_DFF)) {
 			// data is 16 bit wide
 			*((uint16_t*) rxBuffer) = spiReg->DR;
@@ -357,30 +357,30 @@ void spi_irqHandling(SPI_Handle_t *spiHandle) {
 	uint8_t temp1, temp2;
 
 	// check for TXE
-	temp1 = CHECK_BIT_FOR_SET(spiHandle->spi->SR, SPI_SR_TXE);
-	temp2 = CHECK_BIT_FOR_SET(spiHandle->spi->CR2, SPI_CR2_TXEIE);
+	temp1 = IS_BIT_SET(spiHandle->spi->SR, SPI_SR_TXE);
+	temp2 = IS_BIT_SET(spiHandle->spi->CR2, SPI_CR2_TXEIE);
 
 	if (temp1 && temp2) {
 		// handle TXE
-		spiTxeIntHandle(spiHandle);
+		spiTxeItHandle(spiHandle);
 	}
 
 	// check for RXNE
-	temp1 = CHECK_BIT_FOR_SET(spiHandle->spi->SR, SPI_SR_RXNE);
-	temp2 = CHECK_BIT_FOR_SET(spiHandle->spi->CR2, SPI_CR2_RXNEIE);
+	temp1 = IS_BIT_SET(spiHandle->spi->SR, SPI_SR_RXNE);
+	temp2 = IS_BIT_SET(spiHandle->spi->CR2, SPI_CR2_RXNEIE);
 
 	if (temp1 && temp2) {
 		// handle RXNE
-		spiRxneIntHandle(spiHandle);
+		spiRxneItHandle(spiHandle);
 	}
 
 	// check for OVR
-	temp1 = CHECK_BIT_FOR_SET(spiHandle->spi->SR, SPI_SR_OVR);
-	temp2 = CHECK_BIT_FOR_SET(spiHandle->spi->CR2, SPI_CR2_ERRIE);
+	temp1 = IS_BIT_SET(spiHandle->spi->SR, SPI_SR_OVR);
+	temp2 = IS_BIT_SET(spiHandle->spi->CR2, SPI_CR2_ERRIE);
 
 	if (temp1 && temp2) {
 		// handle overrun error
-		spiOvrErrIntHandle(spiHandle);
+		spiOvrErrItHandle(spiHandle);
 	}
 
 }
@@ -391,9 +391,9 @@ void spi_irqHandling(SPI_Handle_t *spiHandle) {
  *						 					Helper Function Implementations
  **********************************************************************************************************************/
 
-static void spiTxeIntHandle(SPI_Handle_t *spiHandle) {
+static void spiTxeItHandle(SPI_Handle_t *spiHandle) {
 
-	if (CHECK_BIT_FOR_SET(spiHandle->spi->CR1, SPI_CR1_DFF)) {
+	if (IS_BIT_SET(spiHandle->spi->CR1, SPI_CR1_DFF)) {
 		// Data is 16 bit wide
 		spiHandle->spi->DR = *((uint16_t*) spiHandle->txBuffer);
 		(uint16_t*) spiHandle->txBuffer++;
@@ -415,9 +415,9 @@ static void spiTxeIntHandle(SPI_Handle_t *spiHandle) {
 }
 
 
-static void spiRxneIntHandle(SPI_Handle_t *spiHandle) {
+static void spiRxneItHandle(SPI_Handle_t *spiHandle) {
 
-	if (CHECK_BIT_FOR_SET(spiHandle->spi->CR1, SPI_CR1_DFF)) {
+	if (IS_BIT_SET(spiHandle->spi->CR1, SPI_CR1_DFF)) {
 		// data is 16 bit wide
 		*((uint16_t*) spiHandle->rxBuffer) = spiHandle->spi->DR;
 		(uint16_t*) spiHandle->rxBuffer++;
@@ -438,7 +438,7 @@ static void spiRxneIntHandle(SPI_Handle_t *spiHandle) {
 }
 
 
-static void spiOvrErrIntHandle(SPI_Handle_t *spiHandle) {
+static void spiOvrErrItHandle(SPI_Handle_t *spiHandle) {
 
 	uint8_t temp;
 	// if the spi peripheral is not busy in transmission

@@ -31,7 +31,7 @@ typedef struct {
 	uint8_t txRxState;									/* Possible values from @I2C_STATE */
 	uint8_t devAddr;
 	uint32_t rxSize;
-	uint8_t repeatedStart;
+	uint8_t repeatedStart;								/* Possible values from @I2C_RS */
 
 } I2C_Handle_t;
 
@@ -71,6 +71,24 @@ typedef struct {
 #define I2C_STATE_READY									0
 #define I2C_STATE_BUSY_IN_RX							1
 #define I2C_STATE_BUSY_IN_TX							2
+
+
+/*
+ * @I2C_EVENT
+ */
+#define I2C_EVENT_TX_CMPLT								1
+#define I2C_EVENT_RX_CMPLT								2
+#define I2C_EVENT_STOP									3
+#define I2C_EVENT_DATA_REQ								4
+#define I2C_EVENT_DATA_RCV								5
+
+
+/*
+ * @I2C_RS
+ * I2C repeated start possible values
+ */
+#define I2C_RS_ENABLE									1
+#define I2C_RS_DISABLE									0
 
 /**********************************************************************************************************************
  * 													Driver APIs
@@ -136,6 +154,22 @@ void i2c_irqInterruptConfig(uint8_t irqNumber, uint8_t enOrDi);
 void i2c_irqPriorityConfig(uint8_t irqNumber, uint32_t irqPriority);
 
 
+/*
+ * I2C event interrupt handler
+ */
+void i2c_evIrqHandling(I2C_Handle_t *i2cHandle);
+
+
+/*
+ * I2C error interrupt handler
+ */
+void i2c_erIrqHandling(I2C_Handle_t *i2cHandle);
+
+
+/*
+ * Application event callback
+ */
+void i2c_appEventCallback(I2C_Handle_t *i2cHandle, uint8_t appEvent);
 
 #endif /* INC_STM32F411XX_I2C_DRIVER_H_ */
 
