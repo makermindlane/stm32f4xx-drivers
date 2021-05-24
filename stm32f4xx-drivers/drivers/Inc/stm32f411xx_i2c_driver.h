@@ -84,6 +84,16 @@ typedef struct {
 
 
 /*
+ *
+ */
+#define I2C_ERROR_BERR  								3
+#define I2C_ERROR_ARLO  								4
+#define I2C_ERROR_AF									5
+#define I2C_ERROR_OVR   								6
+#define I2C_ERROR_TIMEOUT 								7
+
+
+/*
  * @I2C_RS
  * I2C repeated start possible values
  */
