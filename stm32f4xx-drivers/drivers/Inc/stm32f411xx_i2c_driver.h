@@ -147,6 +147,17 @@ uint8_t i2c_masterReceiveDataIt(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer, uint
 
 
 /*
+ * Slave send data
+ */
+void i2c_slaveSendData(I2C_RegDef_t *i2c, uint8_t data);
+
+
+/*
+ * Slave receive data
+ */
+uint8_t i2c_slaveReceiveData(I2C_RegDef_t *i2c);
+
+/*
  * I2C peripheral enable/disable
  */
 void i2c_peripheralControl(I2C_RegDef_t *i2c, uint8_t enOrDi);
