@@ -1,14 +1,11 @@
 #include "stm32f411xx_spi_driver.h"
 
-
 /**********************************************************************************************************************
  *						 						Function prototypes
  **********************************************************************************************************************/
 static void spiTxeIntHandle(SPI_Handle_t *spiHandle);
 static void spiRxneIntHandle(SPI_Handle_t *spiHandle);
 static void spiOvrErrIntHandle(SPI_Handle_t *spiHandle);
-
-
 
 /*
  * Peripheral clock setup
@@ -63,7 +60,6 @@ void spi_periClockControl(SPI_RegDef_t *spiReg, uint8_t enOrDi) {
 
 }
 
-
 /*
  * Init and De Init
  */
@@ -116,7 +112,6 @@ void spi_init(SPI_Handle_t *spiHandle) {
 
 }
 
-
 void spi_deInit(SPI_RegDef_t *spiReg) {
 
 	if (spiReg == SPI1) {
@@ -133,7 +128,6 @@ void spi_deInit(SPI_RegDef_t *spiReg) {
 
 }
 
-
 /*
  * Data send and receive
  */
@@ -141,9 +135,10 @@ void spi_sendData(SPI_RegDef_t *spiReg, uint8_t *txBuffer, uint32_t len) {
 
 	while (len > 0) {
 
-		while (!(CHECK_BIT_FOR_SET(spiReg->SR, SPI_SR_TXE)));
+		while (IS_BIT_RESET(spiReg->SR, SPI_SR_TXE))
+			;
 
-		if (spiReg->CR1 & (1 << SPI_CR1_DFF)) {
+		if (IS_BIT_SET(spiReg->CR1, SPI_CR1_DFF)) {
 			// Data is 16 bit wide
 			spiReg->DR = *((uint16_t*) txBuffer);
 			(uint16_t*) txBuffer++;
@@ -158,7 +153,6 @@ void spi_sendData(SPI_RegDef_t *spiReg, uint8_t *txBuffer, uint32_t len) {
 
 }
 
-
 /*
  * Receive data
  */
@@ -167,8 +161,9 @@ void spi_receiveData(SPI_RegDef_t *spiReg, uint8_t *rxBuffer, uint32_t len) {
 	while (len > 0) {
 
 		// wait until data becomes available in hardware rx buffer
-		while (!(CHECK_BIT_FOR_SET(spiReg->SR, SPI_SR_RXNE)));
-		if (spiReg->CR1 & (1 << SPI_CR1_DFF)) {
+		while (IS_BIT_RESET(spiReg->SR, SPI_SR_RXNE))
+			;
+		if (IS_BIT_SET(spiReg->CR1, SPI_CR1_DFF)) {
 			// data is 16 bit wide
 			*((uint16_t*) rxBuffer) = spiReg->DR;
 			(uint16_t*) rxBuffer++;
@@ -182,7 +177,6 @@ void spi_receiveData(SPI_RegDef_t *spiReg, uint8_t *rxBuffer, uint32_t len) {
 	}
 
 }
-
 
 /*
  * Send data interrupt api
@@ -201,11 +195,11 @@ uint8_t spi_sendDataIt(SPI_Handle_t *spiHandle, uint8_t *txBuffer, uint32_t len)
 	return state;
 }
 
-
 /*
  * Receive data interrupt api
  */
-uint8_t spi_receiveDataIt(SPI_Handle_t *spiHandle, uint8_t *rxBuffer, uint32_t len) {
+uint8_t spi_receiveDataIt(SPI_Handle_t *spiHandle, uint8_t *rxBuffer,
+		uint32_t len) {
 	uint8_t state = spiHandle->rxState;
 	if (state != SPI_STATE_BUSY_IN_RX) {
 		spiHandle->rxBuffer = rxBuffer;
@@ -218,8 +212,6 @@ uint8_t spi_receiveDataIt(SPI_Handle_t *spiHandle, uint8_t *rxBuffer, uint32_t l
 	}
 	return state;
 }
-
-
 
 /*
  * SPI peripheral enable/disable
@@ -236,7 +228,6 @@ void spi_peripheralControl(SPI_RegDef_t *spiReg, uint8_t enOrDi) {
 
 }
 
-
 /*
  * SPI SSI config
  */
@@ -251,7 +242,6 @@ void spi_ssiConfig(SPI_RegDef_t *spiReg, uint8_t enOrDi) {
 	}
 
 }
-
 
 /*
  * SPI SSI config
@@ -268,7 +258,6 @@ void spi_ssoeConfig(SPI_RegDef_t *spiReg, uint8_t enOrDi) {
 
 }
 
-
 /*
  * Clear overrun error flag
  */
@@ -283,7 +272,6 @@ void spi_clearOvrFlag(SPI_RegDef_t *spiReg) {
 	(void) temp;
 }
 
-
 /*
  * Close spi transmission
  */
@@ -293,7 +281,6 @@ void spi_closeTransmission(SPI_Handle_t *spiHandle) {
 	spiHandle->txLen = 0;
 	spiHandle->txState = SPI_STATE_READY;
 }
-
 
 /*
  * Close spi reception
@@ -305,14 +292,12 @@ void spi_closeReception(SPI_Handle_t *spiHandle) {
 	spiHandle->rxState = SPI_STATE_READY;
 }
 
-
 /*
  * Application event callback
  */
 __weak void spi_appEventCallback(SPI_Handle_t *spiHandle, uint8_t appEvent) {
 
 }
-
 
 /*
  * IRQ configuration and ISR handling
@@ -360,7 +345,6 @@ void spi_irqInterruptConfig(uint8_t irqNumber, uint8_t enOrDi) {
 
 }
 
-
 void spi_irqPriorityConfig(uint8_t irqNumber, uint32_t irqPriority) {
 
 	uint8_t iprx = irqNumber / 4;
@@ -371,14 +355,13 @@ void spi_irqPriorityConfig(uint8_t irqNumber, uint32_t irqPriority) {
 
 }
 
-
 void spi_irqHandling(SPI_Handle_t *spiHandle) {
 
 	uint8_t temp1, temp2;
 
 	// check for TXE
-	temp1 = CHECK_BIT_FOR_SET(spiHandle->spiReg->SR, SPI_SR_TXE);
-	temp2 = CHECK_BIT_FOR_SET(spiHandle->spiReg->CR2, SPI_CR2_TXEIE);
+	temp1 = IS_BIT_SET(spiHandle->spiReg->SR, SPI_SR_TXE);
+	temp2 = IS_BIT_SET(spiHandle->spiReg->CR2, SPI_CR2_TXEIE);
 
 	if (temp1 && temp2) {
 		// handle TXE
@@ -386,8 +369,8 @@ void spi_irqHandling(SPI_Handle_t *spiHandle) {
 	}
 
 	// check for RXNE
-	temp1 = CHECK_BIT_FOR_SET(spiHandle->spiReg->SR, SPI_SR_RXNE);
-	temp2 = CHECK_BIT_FOR_SET(spiHandle->spiReg->CR2, SPI_CR2_RXNEIE);
+	temp1 = IS_BIT_SET(spiHandle->spiReg->SR, SPI_SR_RXNE);
+	temp2 = IS_BIT_SET(spiHandle->spiReg->CR2, SPI_CR2_RXNEIE);
 
 	if (temp1 && temp2) {
 		// handle RXNE
@@ -395,8 +378,8 @@ void spi_irqHandling(SPI_Handle_t *spiHandle) {
 	}
 
 	// check for OVR
-	temp1 = CHECK_BIT_FOR_SET(spiHandle->spiReg->SR, SPI_SR_OVR);
-	temp2 = CHECK_BIT_FOR_SET(spiHandle->spiReg->CR2, SPI_CR2_ERRIE);
+	temp1 = IS_BIT_SET(spiHandle->spiReg->SR, SPI_SR_OVR);
+	temp2 = IS_BIT_SET(spiHandle->spiReg->CR2, SPI_CR2_ERRIE);
 
 	if (temp1 && temp2) {
 		// handle overrun error
@@ -405,15 +388,13 @@ void spi_irqHandling(SPI_Handle_t *spiHandle) {
 
 }
 
-
-
 /**********************************************************************************************************************
  *						 					Helper Function Implementations
  **********************************************************************************************************************/
 
 static void spiTxeIntHandle(SPI_Handle_t *spiHandle) {
 
-	if (CHECK_BIT_FOR_SET(spiHandle->spiReg->CR1, SPI_CR1_DFF)) {
+	if (IS_BIT_SET(spiHandle->spiReg->CR1, SPI_CR1_DFF)) {
 		// Data is 16 bit wide
 		spiHandle->spiReg->DR = *((uint16_t*) spiHandle->txBuffer);
 		(uint16_t*) spiHandle->txBuffer++;
@@ -434,10 +415,9 @@ static void spiTxeIntHandle(SPI_Handle_t *spiHandle) {
 
 }
 
-
 static void spiRxneIntHandle(SPI_Handle_t *spiHandle) {
 
-	if (CHECK_BIT_FOR_SET(spiHandle->spiReg->CR1, SPI_CR1_DFF)) {
+	if (IS_BIT_SET(spiHandle->spiReg->CR1, SPI_CR1_DFF)) {
 		// data is 16 bit wide
 		*((uint16_t*) spiHandle->rxBuffer) = spiHandle->spiReg->DR;
 		(uint16_t*) spiHandle->rxBuffer++;
@@ -457,7 +437,6 @@ static void spiRxneIntHandle(SPI_Handle_t *spiHandle) {
 
 }
 
-
 static void spiOvrErrIntHandle(SPI_Handle_t *spiHandle) {
 
 	uint8_t temp;
@@ -471,17 +450,4 @@ static void spiOvrErrIntHandle(SPI_Handle_t *spiHandle) {
 	spi_appEventCallback(spiHandle, SPI_EVENT_OVR_ERR);
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 

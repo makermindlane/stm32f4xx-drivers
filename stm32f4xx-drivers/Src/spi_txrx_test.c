@@ -172,7 +172,7 @@ int main() {
 		}
 
 		// before closing the spi check if spi is busy in any communication
-		while (CHECK_BIT_FOR_SET(SPI2->SR, SPI_SR_BSY));
+		while (IS_BIT_SET(SPI2->SR, SPI_SR_BSY));
 		// close the spi communication
 		spi_peripheralControl(SPI2, DISABLE);
 	}
