@@ -4,14 +4,12 @@
 #include "stm32f411xx_spi_driver.h"
 #include "stm32f411xx_gpio_driver.h"
 
-
 /*
  * SPI2_MOSI --> PB15
  * SPI2_MISO --> PB14
  * SPI2_SCLK --> PB13
  * SPI2_NSS  --> PB12
  */
-
 
 //command codes
 #define CMD_LED_CTRL      		0x50
@@ -36,9 +34,7 @@
 #define SUCCESS					1
 #define FAILURE					0
 
-
 extern void initialise_monitor_handles();
-
 
 /**********************************************************************************************************************
  * 												Functions prototypes
@@ -51,9 +47,8 @@ void delay();
 
 uint8_t spiVerifyResponse(uint8_t ackByte);
 uint8_t spiSendCmd(SPI_RegDef_t *spi, uint8_t cmdCode);
-uint8_t spiSendReadCmd(SPI_RegDef_t *spi, uint8_t cmdCode, uint8_t args[], uint8_t nargs, uint8_t *rxBuffer);
-
-
+uint8_t spiSendReadCmd(SPI_RegDef_t *spi, uint8_t cmdCode, uint8_t args[],
+		uint8_t nargs, uint8_t *rxBuffer);
 
 int main() {
 
@@ -70,16 +65,14 @@ int main() {
 
 	buttonInit();
 
-
-		/*
-		 * SSOE = 1:
-		 * 		SPE = 1, hardware makes NSS = 0 and selects the slave.
-		 * 		SPE = 0, hardware makes NSS = 1 and doesn't selects the slave.
-		 * SSOE = 0:
-		 * 		This is a multi-master mode and we are not concerned about it right now.
-		 */
-		spi_ssoeConfig(SPI2, ENABLE);
-
+	/*
+	 * SSOE = 1:
+	 * 		SPE = 1, hardware makes NSS = 0 and selects the slave.
+	 * 		SPE = 0, hardware makes NSS = 1 and doesn't selects the slave.
+	 * SSOE = 0:
+	 * 		This is a multi-master mode and we are not concerned about it right now.
+	 */
+	spi_ssoeConfig(SPI2, ENABLE);
 
 	while (1) {
 
@@ -132,7 +125,7 @@ int main() {
 			delay();
 			spi_sendData(SPI2, &dummyWrite, 1);
 			spi_receiveData(SPI2, &ledStatus, 1);
-			printf("COMMAND_READ_LED %d\n",ledStatus);
+			printf("COMMAND_READ_LED %d\n", ledStatus);
 
 		} else {
 			// handle error code (right now its just a simple infinite while loop to help in debugging
@@ -177,7 +170,6 @@ int main() {
 		spi_peripheralControl(SPI2, DISABLE);
 	}
 
-
 	return 0;
 
 }
@@ -214,11 +206,10 @@ void spi2GpioInit() {
 
 }
 
-
 void delay() {
-	for (int i = 500000 / 2; i > 0; --i);
+	for (int i = 500000 / 2; i > 0; --i)
+		;
 }
-
 
 void spi2Init() {
 	SPI_Handle_t spiHandle;
@@ -238,7 +229,6 @@ void spi2Init() {
 	spi_init(&spiHandle);
 }
 
-
 void buttonInit() {
 	GPIO_Handle_t buttonHandle;
 
@@ -253,7 +243,6 @@ void buttonInit() {
 	gpio_init(&buttonHandle);
 }
 
-
 uint8_t spiVerifyResponse(uint8_t ackByte) {
 	if (ackByte == (uint8_t) 0xF5) {
 		// ack byte received
@@ -263,15 +252,15 @@ uint8_t spiVerifyResponse(uint8_t ackByte) {
 	return 0;
 }
 
-
-uint8_t spiSendCmd(SPI_RegDef_t* spi, uint8_t cmdCode) {
+uint8_t spiSendCmd(SPI_RegDef_t *spi, uint8_t cmdCode) {
 
 	uint8_t dummyRead;
 	uint8_t dummyWrite = 0xFF;
 	uint8_t ackByte;
 
 	// wait here until button goes down
-	while (!(gpio_readFromInputPin(GPIOB, GPIO_PIN_NO_4)));
+	while (!(gpio_readFromInputPin(GPIOB, GPIO_PIN_NO_4)))
+		;
 	// for debouncing purpose
 	delay();
 
@@ -292,5 +281,4 @@ uint8_t spiSendCmd(SPI_RegDef_t* spi, uint8_t cmdCode) {
 	// nack byte is received, return with failure status
 	return FAILURE;
 }
-
 
