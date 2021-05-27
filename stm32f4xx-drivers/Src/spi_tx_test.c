@@ -1,4 +1,4 @@
-#include <string.h>
+//#include <string.h>
 
 #include "stm32f411xx_spi_driver.h"
 #include "stm32f411xx_gpio_driver.h"
