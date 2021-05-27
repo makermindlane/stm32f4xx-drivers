@@ -26,7 +26,7 @@ typedef struct {
  */
 typedef struct {
 
-	SPI_RegDef_t *spiReg;
+	SPI_RegDef_t *spi;
 	SPI_Config_t spiCfg;
 	uint8_t *txBuffer;
 	uint8_t *rxBuffer;

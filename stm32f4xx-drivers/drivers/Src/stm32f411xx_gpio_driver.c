@@ -71,73 +71,73 @@ void gpio_init(GPIO_Handle_t *gpioHandle) {
 	uint32_t temp = 0;
 
 	// enable gpio peripheral clock
-	gpio_periClockControl(gpioHandle->gpioPort, ENABLE);
+	gpio_periClockControl(gpioHandle->gpio, ENABLE);
 
 	// configure mode of the gpio pin
-	if (gpioHandle->gpioPinCfg.gpioPinMode <= GPIO_PIN_MODE_ANALOG) {
+	if (gpioHandle->pinCfg.pinMode <= GPIO_PIN_MODE_ANALOG) {
 
-		temp = (gpioHandle->gpioPinCfg.gpioPinMode << (2 * gpioHandle->gpioPinCfg.gpioPinNumber));
-		gpioHandle->gpioPort->MODER &= ~(0x3 << (2 * gpioHandle->gpioPinCfg.gpioPinNumber));
-		gpioHandle->gpioPort->MODER |= temp;
+		temp = (gpioHandle->pinCfg.pinMode << (2 * gpioHandle->pinCfg.pinNumber));
+		gpioHandle->gpio->MODER &= ~(0x3 << (2 * gpioHandle->pinCfg.pinNumber));
+		gpioHandle->gpio->MODER |= temp;
 
 	} else {
 
-		if (gpioHandle->gpioPinCfg.gpioPinMode == GPIO_PIN_MODE_IT_FT) {
+		if (gpioHandle->pinCfg.pinMode == GPIO_PIN_MODE_IT_FT) {
 
-			EXTI->FTSR |= (1 << gpioHandle->gpioPinCfg.gpioPinNumber);
-			EXTI->RTSR &= ~(1 << gpioHandle->gpioPinCfg.gpioPinNumber);
+			EXTI->FTSR |= (1 << gpioHandle->pinCfg.pinNumber);
+			EXTI->RTSR &= ~(1 << gpioHandle->pinCfg.pinNumber);
 
-		} else if (gpioHandle->gpioPinCfg.gpioPinMode == GPIO_PIN_MODE_IT_RT) {
+		} else if (gpioHandle->pinCfg.pinMode == GPIO_PIN_MODE_IT_RT) {
 
-			EXTI->RTSR |= (1 << gpioHandle->gpioPinCfg.gpioPinNumber);
-			EXTI->FTSR &= ~(1 << gpioHandle->gpioPinCfg.gpioPinNumber);
+			EXTI->RTSR |= (1 << gpioHandle->pinCfg.pinNumber);
+			EXTI->FTSR &= ~(1 << gpioHandle->pinCfg.pinNumber);
 
-		} else if (gpioHandle->gpioPinCfg.gpioPinMode == GPIO_PIN_MODE_IT_RFT) {
+		} else if (gpioHandle->pinCfg.pinMode == GPIO_PIN_MODE_IT_RFT) {
 
-			EXTI->FTSR |= (1 << gpioHandle->gpioPinCfg.gpioPinNumber);
-			EXTI->RTSR |= (1 << gpioHandle->gpioPinCfg.gpioPinNumber);
+			EXTI->FTSR |= (1 << gpioHandle->pinCfg.pinNumber);
+			EXTI->RTSR |= (1 << gpioHandle->pinCfg.pinNumber);
 
 		}
 
 		// configure the gpio port selection in SYSCFG_EXTICR
-		uint8_t idx = gpioHandle->gpioPinCfg.gpioPinNumber / 4;
-		uint8_t bitIdx = gpioHandle->gpioPinCfg.gpioPinNumber % 4;
+		uint8_t idx = gpioHandle->pinCfg.pinNumber / 4;
+		uint8_t bitIdx = gpioHandle->pinCfg.pinNumber % 4;
 		SYSCFG_PCLK_EN();
-		uint8_t portcode = GPIO_BASEADDR_TO_PORTCODE(gpioHandle->gpioPort);
+		uint8_t portcode = GPIO_BASEADDR_TO_PORTCODE(gpioHandle->gpio);
 		SYSCFG->EXTICR[idx] |= (portcode << (bitIdx * 4));
 
 		// enable the exti interrupt delivery using IMR
-		EXTI->IMR |= (1 << gpioHandle->gpioPinCfg.gpioPinNumber);
+		EXTI->IMR |= (1 << gpioHandle->pinCfg.pinNumber);
 	}
 	temp = 0;
 
 	// configure speed of gpio
-	temp = (gpioHandle->gpioPinCfg.gpioPinSpeed << (2 * gpioHandle->gpioPinCfg.gpioPinNumber));
-	gpioHandle->gpioPort->OSPEEDR &= ~(0x3 << (2 * gpioHandle->gpioPinCfg.gpioPinNumber));
-	gpioHandle->gpioPort->OSPEEDR |= temp;
+	temp = (gpioHandle->pinCfg.pinSpeed << (2 * gpioHandle->pinCfg.pinNumber));
+	gpioHandle->gpio->OSPEEDR &= ~(0x3 << (2 * gpioHandle->pinCfg.pinNumber));
+	gpioHandle->gpio->OSPEEDR |= temp;
 	temp = 0;
 
 	// configure pupd settings
-	temp = (gpioHandle->gpioPinCfg.gpioPinPuPd << (2 * gpioHandle->gpioPinCfg.gpioPinNumber));
-	gpioHandle->gpioPort->PUPDR &= ~(0x3 << (2 * gpioHandle->gpioPinCfg.gpioPinNumber));
-	gpioHandle->gpioPort->PUPDR |= temp;
+	temp = (gpioHandle->pinCfg.pinPuPd << (2 * gpioHandle->pinCfg.pinNumber));
+	gpioHandle->gpio->PUPDR &= ~(0x3 << (2 * gpioHandle->pinCfg.pinNumber));
+	gpioHandle->gpio->PUPDR |= temp;
 	temp = 0;
 
 	// configure output type
-	temp = (gpioHandle->gpioPinCfg.gpioPinOPType << gpioHandle->gpioPinCfg.gpioPinNumber);
-	gpioHandle->gpioPort->OTYPER &= ~(0x1 << gpioHandle->gpioPinCfg.gpioPinNumber);
-	gpioHandle->gpioPort->OTYPER |= temp;
+	temp = (gpioHandle->pinCfg.pinOPType << gpioHandle->pinCfg.pinNumber);
+	gpioHandle->gpio->OTYPER &= ~(0x1 << gpioHandle->pinCfg.pinNumber);
+	gpioHandle->gpio->OTYPER |= temp;
 	temp = 0;
 
 	// configure alternate functionality
-	if (gpioHandle->gpioPinCfg.gpioPinMode == GPIO_PIN_MODE_AF) {
+	if (gpioHandle->pinCfg.pinMode == GPIO_PIN_MODE_AF) {
 
-		uint8_t idx = gpioHandle->gpioPinCfg.gpioPinNumber / 8;
-		uint8_t bitIdx = gpioHandle->gpioPinCfg.gpioPinNumber % 8;
+		uint8_t idx = gpioHandle->pinCfg.pinNumber / 8;
+		uint8_t bitIdx = gpioHandle->pinCfg.pinNumber % 8;
 
-		temp = (gpioHandle->gpioPinCfg.gpioPinAF << (4 * bitIdx));
-		gpioHandle->gpioPort->AFR[idx] &= ~(0xF << (4 * bitIdx));
-		gpioHandle->gpioPort->AFR[idx] |= temp;
+		temp = (gpioHandle->pinCfg.pinAF << (4 * bitIdx));
+		gpioHandle->gpio->AFR[idx] &= ~(0xF << (4 * bitIdx));
+		gpioHandle->gpio->AFR[idx] |= temp;
 		temp = 0;
 
 	}

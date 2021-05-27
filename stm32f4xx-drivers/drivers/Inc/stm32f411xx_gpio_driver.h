@@ -16,12 +16,12 @@
  */
 typedef struct {
 
-	uint8_t gpioPinNumber;						/* Possible values from @GPIO_PIN_NUMBERS */
-	uint8_t gpioPinMode;						/* Possible values from @GPIO_PIN_MODES */
-	uint8_t gpioPinOPType;						/* Possible values from @GPIO_PIN_OPTYPE */
-	uint8_t gpioPinSpeed;						/* Possible values from @GPIO_PIN_SPEED */
-	uint8_t gpioPinPuPd;						/* Possible values from @GPIO_PIN_PUPD */
-	uint8_t gpioPinAF;							/* Possible values from @GPIO_PIN_AF */
+	uint8_t pinNumber;						/* Possible values from @GPIO_PIN_NUMBERS */
+	uint8_t pinMode;						/* Possible values from @GPIO_PIN_MODES */
+	uint8_t pinOPType;						/* Possible values from @GPIO_PIN_OPTYPE */
+	uint8_t pinSpeed;						/* Possible values from @GPIO_PIN_SPEED */
+	uint8_t pinPuPd;						/* Possible values from @GPIO_PIN_PUPD */
+	uint8_t pinAF;							/* Possible values from @GPIO_PIN_AF */
 
 } GPIO_PinConfig_t;
 
@@ -31,8 +31,8 @@ typedef struct {
  */
 typedef struct {
 
-	GPIO_RegDef_t *gpioPort;
-	GPIO_PinConfig_t gpioPinCfg;
+	GPIO_RegDef_t *gpio;
+	GPIO_PinConfig_t pinCfg;
 
 } GPIO_Handle_t;
 
