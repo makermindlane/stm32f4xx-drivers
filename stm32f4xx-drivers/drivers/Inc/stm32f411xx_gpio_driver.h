@@ -16,12 +16,12 @@
  */
 typedef struct {
 
-	uint8_t gpioPinNumber;						/* Possible values from @GPIO_PIN_NUMBERS */
-	uint8_t gpioPinMode;						/* Possible values from @GPIO_PIN_MODES */
-	uint8_t gpioPinOPType;						/* Possible values from @GPIO_PIN_OPTYPE */
-	uint8_t gpioPinSpeed;						/* Possible values from @GPIO_PIN_SPEED */
-	uint8_t gpioPinPuPd;						/* Possible values from @GPIO_PIN_PUPD */
-	uint8_t gpioPinAF;							/* Possible values from @GPIO_PIN_AF */
+	uint8_t pinNumber;							/* Possible values from @GPIO_PIN_NUMBERS */
+	uint8_t pinMode;							/* Possible values from @GPIO_PIN_MODES */
+	uint8_t pinOPType;							/* Possible values from @GPIO_PIN_OPTYPE */
+	uint8_t pinSpeed;							/* Possible values from @GPIO_PIN_SPEED */
+	uint8_t pinPuPd;							/* Possible values from @GPIO_PIN_PUPD */
+	uint8_t pinAF;								/* Possible values from @GPIO_PIN_AF */
 
 } GPIO_PinConfig_t;
 
@@ -31,8 +31,8 @@ typedef struct {
  */
 typedef struct {
 
-	GPIO_RegDef_t *gpioPort;
-	GPIO_PinConfig_t gpioPinCfg;
+	GPIO_RegDef_t *gpio;
+	GPIO_PinConfig_t pinCfg;
 
 } GPIO_Handle_t;
 
@@ -129,24 +129,24 @@ typedef struct {
 /*
  * Peripheral clock setup
  */
-void gpio_periClockControl(GPIO_RegDef_t *gpioPort, uint8_t enOrDi);
+void gpio_periClockControl(GPIO_RegDef_t *gpio, uint8_t enOrDi);
 
 
 /*
  * Init and De Init
  */
 void gpio_init(GPIO_Handle_t *gpioHandle);
-void gpio_deInit(GPIO_RegDef_t *gpioPort);
+void gpio_deInit(GPIO_RegDef_t *gpio);
 
 
 /*
  * Data read and write
  */
-uint8_t gpio_readFromInputPin(GPIO_RegDef_t *gpioPort, uint8_t pinNumber);
-uint16_t gpio_readFromInputPort(GPIO_RegDef_t *gpioPort);
-void gpio_writeToOutputPin(GPIO_RegDef_t *gpioPort, uint8_t pinNumber, uint8_t value);
-void gpio_writeToOutputPort(GPIO_RegDef_t *gpioPort, uint16_t value);
-void gpio_toggleOutputPin(GPIO_RegDef_t *gpioPort, uint8_t pinNumber);
+uint8_t gpio_readFromInputPin(GPIO_RegDef_t *gpio, uint8_t pinNumber);
+uint16_t gpio_readFromInputPort(GPIO_RegDef_t *gpio);
+void gpio_writeToOutputPin(GPIO_RegDef_t *gpio, uint8_t pinNumber, uint8_t value);
+void gpio_writeToOutputPort(GPIO_RegDef_t *gpio, uint16_t value);
+void gpio_toggleOutputPin(GPIO_RegDef_t *gpio, uint8_t pinNumber);
 
 
 /*

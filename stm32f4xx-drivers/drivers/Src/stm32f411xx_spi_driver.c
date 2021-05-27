@@ -3,9 +3,9 @@
 /**********************************************************************************************************************
  *						 						Function prototypes
  **********************************************************************************************************************/
-static void spiTxeIntHandle(SPI_Handle_t *spiHandle);
-static void spiRxneIntHandle(SPI_Handle_t *spiHandle);
-static void spiOvrErrIntHandle(SPI_Handle_t *spiHandle);
+static void spiTxeItHandle(SPI_Handle_t *spiHandle);
+static void spiRxneItHandle(SPI_Handle_t *spiHandle);
+static void spiOvrErrItHandle(SPI_Handle_t *spiHandle);
 
 /*
  * Peripheral clock setup
@@ -14,47 +14,27 @@ void spi_periClockControl(SPI_RegDef_t *spiReg, uint8_t enOrDi) {
 
 	if (enOrDi == ENABLE) {
 		if (spiReg == SPI1) {
-
 			SPI1_PCLK_EN();
-
 		} else if (spiReg == SPI2) {
-
 			SPI2_PCLK_EN();
-
 		} else if (spiReg == SPI3) {
-
 			SPI3_PCLK_EN();
-
 		} else if (spiReg == SPI4) {
-
 			SPI4_PCLK_EN();
-
 		} else if (spiReg == SPI5) {
-
 			SPI5_PCLK_EN();
-
 		}
 	} else {
 		if (spiReg == SPI1) {
-
-			SPI1_PCLK_EN();
-
+			SPI1_PCLK_DI();
 		} else if (spiReg == SPI2) {
-
-			SPI2_PCLK_EN();
-
+			SPI2_PCLK_DI();
 		} else if (spiReg == SPI3) {
-
-			SPI3_PCLK_EN();
-
+			SPI3_PCLK_DI();
 		} else if (spiReg == SPI4) {
-
-			SPI4_PCLK_EN();
-
+			SPI4_PCLK_DI();
 		} else if (spiReg == SPI5) {
-
-			SPI5_PCLK_EN();
-
+			SPI5_PCLK_DI();
 		}
 	}
 
@@ -68,7 +48,7 @@ void spi_init(SPI_Handle_t *spiHandle) {
 	uint32_t temp = 0;
 
 	// enable spi peripheral clock
-	spi_periClockControl(spiHandle->spiReg, ENABLE);
+	spi_periClockControl(spiHandle->spi, ENABLE);
 
 	// configure the device mode
 	temp |= ((spiHandle->spiCfg.deviceMode) << SPI_CR1_MSTR);
@@ -108,7 +88,7 @@ void spi_init(SPI_Handle_t *spiHandle) {
 	// configure software slave management
 	temp |= ((spiHandle->spiCfg.ssm) << SPI_CR1_SSM);
 
-	spiHandle->spiReg->CR1 = temp;
+	spiHandle->spi->CR1 = temp;
 
 }
 
@@ -134,10 +114,8 @@ void spi_deInit(SPI_RegDef_t *spiReg) {
 void spi_sendData(SPI_RegDef_t *spiReg, uint8_t *txBuffer, uint32_t len) {
 
 	while (len > 0) {
-
 		while (IS_BIT_RESET(spiReg->SR, SPI_SR_TXE))
 			;
-
 		if (IS_BIT_SET(spiReg->CR1, SPI_CR1_DFF)) {
 			// Data is 16 bit wide
 			spiReg->DR = *((uint16_t*) txBuffer);
@@ -190,7 +168,7 @@ uint8_t spi_sendDataIt(SPI_Handle_t *spiHandle, uint8_t *txBuffer, uint32_t len)
 		spiHandle->txState = SPI_STATE_BUSY_IN_TX;
 		// set TXEIE bit, to enable the tx buffer empty interrupt. So, whenever TXE flag is set,
 		// an interrupt is generated
-		spiHandle->spiReg->CR2 = (1 << SPI_CR2_TXEIE);
+		spiHandle->spi->CR2 = (1 << SPI_CR2_TXEIE);
 	}
 	return state;
 }
@@ -208,7 +186,7 @@ uint8_t spi_receiveDataIt(SPI_Handle_t *spiHandle, uint8_t *rxBuffer,
 		spiHandle->rxState = SPI_STATE_BUSY_IN_RX;
 		// set RXNEIE bit, to enable the rx buffer not empty interrupt. So, whenever RXNE flag is set,
 		// an interrupt is generated
-		spiHandle->spiReg->CR2 = (1 << SPI_CR2_RXNEIE);
+		spiHandle->spi->CR2 = (1 << SPI_CR2_RXNEIE);
 	}
 	return state;
 }
@@ -276,7 +254,7 @@ void spi_clearOvrFlag(SPI_RegDef_t *spiReg) {
  * Close spi transmission
  */
 void spi_closeTransmission(SPI_Handle_t *spiHandle) {
-	spiHandle->spiReg->CR2 &= ~(1 << SPI_CR2_TXEIE);
+	spiHandle->spi->CR2 &= ~(1 << SPI_CR2_TXEIE);
 	spiHandle->txBuffer = NULL;
 	spiHandle->txLen = 0;
 	spiHandle->txState = SPI_STATE_READY;
@@ -286,7 +264,7 @@ void spi_closeTransmission(SPI_Handle_t *spiHandle) {
  * Close spi reception
  */
 void spi_closeReception(SPI_Handle_t *spiHandle) {
-	spiHandle->spiReg->CR2 &= ~(1 << SPI_CR2_RXNEIE);
+	spiHandle->spi->CR2 &= ~(1 << SPI_CR2_RXNEIE);
 	spiHandle->rxBuffer = NULL;
 	spiHandle->rxLen = 0;
 	spiHandle->rxState = SPI_STATE_READY;
@@ -365,7 +343,7 @@ void spi_irqHandling(SPI_Handle_t *spiHandle) {
 
 	if (temp1 && temp2) {
 		// handle TXE
-		spiTxeIntHandle(spiHandle);
+		spiTxeItHandle(spiHandle);
 	}
 
 	// check for RXNE
@@ -374,16 +352,15 @@ void spi_irqHandling(SPI_Handle_t *spiHandle) {
 
 	if (temp1 && temp2) {
 		// handle RXNE
-		spiRxneIntHandle(spiHandle);
+		spiRxneItHandle(spiHandle);
 	}
 
 	// check for OVR
 	temp1 = IS_BIT_SET(spiHandle->spiReg->SR, SPI_SR_OVR);
 	temp2 = IS_BIT_SET(spiHandle->spiReg->CR2, SPI_CR2_ERRIE);
-
 	if (temp1 && temp2) {
 		// handle overrun error
-		spiOvrErrIntHandle(spiHandle);
+		spiOvrErrItHandle(spiHandle);
 	}
 
 }
@@ -392,16 +369,16 @@ void spi_irqHandling(SPI_Handle_t *spiHandle) {
  *						 					Helper Function Implementations
  **********************************************************************************************************************/
 
-static void spiTxeIntHandle(SPI_Handle_t *spiHandle) {
+static void spiTxeItHandle(SPI_Handle_t *spiHandle) {
 
 	if (IS_BIT_SET(spiHandle->spiReg->CR1, SPI_CR1_DFF)) {
 		// Data is 16 bit wide
-		spiHandle->spiReg->DR = *((uint16_t*) spiHandle->txBuffer);
+		spiHandle->spi->DR = *((uint16_t*) spiHandle->txBuffer);
 		(uint16_t*) spiHandle->txBuffer++;
 		spiHandle->txLen -= 2;
 	} else {
 		// Data is 8 bit wide
-		spiHandle->spiReg->DR = *spiHandle->txBuffer;
+		spiHandle->spi->DR = *spiHandle->txBuffer;
 		spiHandle->txBuffer++;
 		spiHandle->txLen--;
 	}
@@ -415,16 +392,17 @@ static void spiTxeIntHandle(SPI_Handle_t *spiHandle) {
 
 }
 
+
 static void spiRxneIntHandle(SPI_Handle_t *spiHandle) {
 
 	if (IS_BIT_SET(spiHandle->spiReg->CR1, SPI_CR1_DFF)) {
 		// data is 16 bit wide
-		*((uint16_t*) spiHandle->rxBuffer) = spiHandle->spiReg->DR;
+		*((uint16_t*) spiHandle->rxBuffer) = spiHandle->spi->DR;
 		(uint16_t*) spiHandle->rxBuffer++;
 		spiHandle->rxLen -= 2;
 	} else {
 		// data is 8 bit wide
-		*(spiHandle->rxBuffer) = spiHandle->spiReg->DR;
+		*(spiHandle->rxBuffer) = spiHandle->spi->DR;
 		spiHandle->rxBuffer++;
 		spiHandle->rxLen--;
 	}
@@ -437,12 +415,12 @@ static void spiRxneIntHandle(SPI_Handle_t *spiHandle) {
 
 }
 
-static void spiOvrErrIntHandle(SPI_Handle_t *spiHandle) {
 
+static void spiOvrErrIntHandle(SPI_Handle_t *spiHandle) {
 	uint8_t temp;
 	// if the spi peripheral is not busy in transmission
 	if (spiHandle->txState != SPI_STATE_BUSY_IN_TX) {
-		spi_clearOvrFlag(spiHandle->spiReg);
+		spi_clearOvrFlag(spiHandle->spi);
 	}
 	// it does nothing, its just used to avoid the unused variable warning
 	(void) temp;
