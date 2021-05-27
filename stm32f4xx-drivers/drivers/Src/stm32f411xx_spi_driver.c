@@ -10,30 +10,30 @@ static void spiOvrErrItHandle(SPI_Handle_t *spiHandle);
 /*
  * Peripheral clock setup
  */
-void spi_periClockControl(SPI_RegDef_t *spiReg, uint8_t enOrDi) {
+void spi_periClockControl(SPI_RegDef_t *spi, uint8_t enOrDi) {
 
 	if (enOrDi == ENABLE) {
-		if (spiReg == SPI1) {
+		if (spi == SPI1) {
 			SPI1_PCLK_EN();
-		} else if (spiReg == SPI2) {
+		} else if (spi == SPI2) {
 			SPI2_PCLK_EN();
-		} else if (spiReg == SPI3) {
+		} else if (spi == SPI3) {
 			SPI3_PCLK_EN();
-		} else if (spiReg == SPI4) {
+		} else if (spi == SPI4) {
 			SPI4_PCLK_EN();
-		} else if (spiReg == SPI5) {
+		} else if (spi == SPI5) {
 			SPI5_PCLK_EN();
 		}
 	} else {
-		if (spiReg == SPI1) {
+		if (spi == SPI1) {
 			SPI1_PCLK_DI();
-		} else if (spiReg == SPI2) {
+		} else if (spi == SPI2) {
 			SPI2_PCLK_DI();
-		} else if (spiReg == SPI3) {
+		} else if (spi == SPI3) {
 			SPI3_PCLK_DI();
-		} else if (spiReg == SPI4) {
+		} else if (spi == SPI4) {
 			SPI4_PCLK_DI();
-		} else if (spiReg == SPI5) {
+		} else if (spi == SPI5) {
 			SPI5_PCLK_DI();
 		}
 	}
@@ -92,17 +92,17 @@ void spi_init(SPI_Handle_t *spiHandle) {
 
 }
 
-void spi_deInit(SPI_RegDef_t *spiReg) {
+void spi_deInit(SPI_RegDef_t *spi) {
 
-	if (spiReg == SPI1) {
+	if (spi == SPI1) {
 		SPI1_REG_RESET();
-	} else if (spiReg == SPI2) {
+	} else if (spi == SPI2) {
 		SPI2_REG_RESET();
-	} else if (spiReg == SPI3) {
+	} else if (spi == SPI3) {
 		SPI3_REG_RESET();
-	} else if (spiReg == SPI4) {
+	} else if (spi == SPI4) {
 		SPI4_REG_RESET();
-	} else if (spiReg == SPI5) {
+	} else if (spi == SPI5) {
 		SPI5_REG_RESET();
 	}
 
@@ -111,19 +111,19 @@ void spi_deInit(SPI_RegDef_t *spiReg) {
 /*
  * Data send and receive
  */
-void spi_sendData(SPI_RegDef_t *spiReg, uint8_t *txBuffer, uint32_t len) {
+void spi_sendData(SPI_RegDef_t *spi, uint8_t *txBuffer, uint32_t len) {
 
 	while (len > 0) {
-		while (IS_BIT_RESET(spiReg->SR, SPI_SR_TXE))
+		while (IS_BIT_RESET(spi->SR, SPI_SR_TXE))
 			;
-		if (IS_BIT_SET(spiReg->CR1, SPI_CR1_DFF)) {
+		if (IS_BIT_SET(spi->CR1, SPI_CR1_DFF)) {
 			// Data is 16 bit wide
-			spiReg->DR = *((uint16_t*) txBuffer);
+			spi->DR = *((uint16_t*) txBuffer);
 			(uint16_t*) txBuffer++;
 			len -= 2;
 		} else {
 			// Data is 8 bit wide
-			spiReg->DR = *txBuffer;
+			spi->DR = *txBuffer;
 			txBuffer++;
 			len--;
 		}
@@ -134,21 +134,21 @@ void spi_sendData(SPI_RegDef_t *spiReg, uint8_t *txBuffer, uint32_t len) {
 /*
  * Receive data
  */
-void spi_receiveData(SPI_RegDef_t *spiReg, uint8_t *rxBuffer, uint32_t len) {
+void spi_receiveData(SPI_RegDef_t *spi, uint8_t *rxBuffer, uint32_t len) {
 
 	while (len > 0) {
 
 		// wait until data becomes available in hardware rx buffer
-		while (IS_BIT_RESET(spiReg->SR, SPI_SR_RXNE))
+		while (IS_BIT_RESET(spi->SR, SPI_SR_RXNE))
 			;
-		if (IS_BIT_SET(spiReg->CR1, SPI_CR1_DFF)) {
+		if (IS_BIT_SET(spi->CR1, SPI_CR1_DFF)) {
 			// data is 16 bit wide
-			*((uint16_t*) rxBuffer) = spiReg->DR;
+			*((uint16_t*) rxBuffer) = spi->DR;
 			(uint16_t*) rxBuffer++;
 			len -= 2;
 		} else {
 			// data is 8 bit wide
-			*rxBuffer = spiReg->DR;
+			*rxBuffer = spi->DR;
 			rxBuffer++;
 			len--;
 		}
@@ -194,14 +194,14 @@ uint8_t spi_receiveDataIt(SPI_Handle_t *spiHandle, uint8_t *rxBuffer,
 /*
  * SPI peripheral enable/disable
  */
-void spi_peripheralControl(SPI_RegDef_t *spiReg, uint8_t enOrDi) {
+void spi_peripheralControl(SPI_RegDef_t *spi, uint8_t enOrDi) {
 
 	if (enOrDi == ENABLE) {
 		// set SPE bit, i.e., enable SPI peripheral
-		spiReg->CR1 |= (1 << SPI_CR1_SPE);
+		spi->CR1 |= (1 << SPI_CR1_SPE);
 	} else {
 		// clear SPE bit i.e., disable SPI peripheral
-		spiReg->CR1 &= ~(1 << SPI_CR1_SPE);
+		spi->CR1 &= ~(1 << SPI_CR1_SPE);
 	}
 
 }
@@ -209,14 +209,14 @@ void spi_peripheralControl(SPI_RegDef_t *spiReg, uint8_t enOrDi) {
 /*
  * SPI SSI config
  */
-void spi_ssiConfig(SPI_RegDef_t *spiReg, uint8_t enOrDi) {
+void spi_ssiConfig(SPI_RegDef_t *spi, uint8_t enOrDi) {
 
 	if (enOrDi == ENABLE) {
 		// set SSI bit, i.e., internal slave select
-		spiReg->CR1 |= (1 << SPI_CR1_SSI);
+		spi->CR1 |= (1 << SPI_CR1_SSI);
 	} else {
 		// clear SSI bit i.e., internal slave select
-		spiReg->CR1 &= ~(1 << SPI_CR1_SSI);
+		spi->CR1 &= ~(1 << SPI_CR1_SSI);
 	}
 
 }
@@ -224,14 +224,14 @@ void spi_ssiConfig(SPI_RegDef_t *spiReg, uint8_t enOrDi) {
 /*
  * SPI SSI config
  */
-void spi_ssoeConfig(SPI_RegDef_t *spiReg, uint8_t enOrDi) {
+void spi_ssoeConfig(SPI_RegDef_t *spi, uint8_t enOrDi) {
 
 	if (enOrDi == ENABLE) {
 		// set SSI bit, i.e., internal slave select
-		spiReg->CR2 |= (1 << SPI_CR2_SSOE);
+		spi->CR2 |= (1 << SPI_CR2_SSOE);
 	} else {
 		// clear SSI bit i.e., internal slave select
-		spiReg->CR2 &= ~(1 << SPI_CR2_SSOE);
+		spi->CR2 &= ~(1 << SPI_CR2_SSOE);
 	}
 
 }
@@ -239,12 +239,12 @@ void spi_ssoeConfig(SPI_RegDef_t *spiReg, uint8_t enOrDi) {
 /*
  * Clear overrun error flag
  */
-void spi_clearOvrFlag(SPI_RegDef_t *spiReg) {
+void spi_clearOvrFlag(SPI_RegDef_t *spi) {
 	uint8_t temp;
 	// clear the overrun error. This is done by first reading the data register (DR)
 	// and then status register (SR)
-	temp = spiReg->DR;
-	temp = spiReg->SR;
+	temp = spi->DR;
+	temp = spi->SR;
 
 	// it does nothing, its just used to avoid the unused variable warning
 	(void) temp;
@@ -338,8 +338,8 @@ void spi_irqHandling(SPI_Handle_t *spiHandle) {
 	uint8_t temp1, temp2;
 
 	// check for TXE
-	temp1 = IS_BIT_SET(spiHandle->spiReg->SR, SPI_SR_TXE);
-	temp2 = IS_BIT_SET(spiHandle->spiReg->CR2, SPI_CR2_TXEIE);
+	temp1 = IS_BIT_SET(spiHandle->spi->SR, SPI_SR_TXE);
+	temp2 = IS_BIT_SET(spiHandle->spi->CR2, SPI_CR2_TXEIE);
 
 	if (temp1 && temp2) {
 		// handle TXE
@@ -347,8 +347,8 @@ void spi_irqHandling(SPI_Handle_t *spiHandle) {
 	}
 
 	// check for RXNE
-	temp1 = IS_BIT_SET(spiHandle->spiReg->SR, SPI_SR_RXNE);
-	temp2 = IS_BIT_SET(spiHandle->spiReg->CR2, SPI_CR2_RXNEIE);
+	temp1 = IS_BIT_SET(spiHandle->spi->SR, SPI_SR_RXNE);
+	temp2 = IS_BIT_SET(spiHandle->spi->CR2, SPI_CR2_RXNEIE);
 
 	if (temp1 && temp2) {
 		// handle RXNE
@@ -356,8 +356,8 @@ void spi_irqHandling(SPI_Handle_t *spiHandle) {
 	}
 
 	// check for OVR
-	temp1 = IS_BIT_SET(spiHandle->spiReg->SR, SPI_SR_OVR);
-	temp2 = IS_BIT_SET(spiHandle->spiReg->CR2, SPI_CR2_ERRIE);
+	temp1 = IS_BIT_SET(spiHandle->spi->SR, SPI_SR_OVR);
+	temp2 = IS_BIT_SET(spiHandle->spi->CR2, SPI_CR2_ERRIE);
 	if (temp1 && temp2) {
 		// handle overrun error
 		spiOvrErrItHandle(spiHandle);
@@ -371,7 +371,7 @@ void spi_irqHandling(SPI_Handle_t *spiHandle) {
 
 static void spiTxeItHandle(SPI_Handle_t *spiHandle) {
 
-	if (IS_BIT_SET(spiHandle->spiReg->CR1, SPI_CR1_DFF)) {
+	if (IS_BIT_SET(spiHandle->spi->CR1, SPI_CR1_DFF)) {
 		// Data is 16 bit wide
 		spiHandle->spi->DR = *((uint16_t*) spiHandle->txBuffer);
 		(uint16_t*) spiHandle->txBuffer++;
@@ -395,7 +395,7 @@ static void spiTxeItHandle(SPI_Handle_t *spiHandle) {
 
 static void spiRxneIntHandle(SPI_Handle_t *spiHandle) {
 
-	if (IS_BIT_SET(spiHandle->spiReg->CR1, SPI_CR1_DFF)) {
+	if (IS_BIT_SET(spiHandle->spi->CR1, SPI_CR1_DFF)) {
 		// data is 16 bit wide
 		*((uint16_t*) spiHandle->rxBuffer) = spiHandle->spi->DR;
 		(uint16_t*) spiHandle->rxBuffer++;
