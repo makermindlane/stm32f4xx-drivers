@@ -1,5 +1,5 @@
-#include <string.h>
-#include <stdio.h>
+//#include <string.h>
+//#include <stdio.h>
 
 #include "stm32f411xx_spi_driver.h"
 #include "stm32f411xx_gpio_driver.h"
