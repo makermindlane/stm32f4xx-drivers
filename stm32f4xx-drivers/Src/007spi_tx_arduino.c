@@ -72,7 +72,9 @@ void gpioButtonInit() {
 }
 
 int main(void) {
-	char user_data[] = "Hello world";
+
+	char user_data[] = "Hi this is dummy text to test that more a large text can be sent successfully via spi.";
+
 
 	//this function is used to initialize the GPIO pins to behave as SPI2 pins
 	spi2GpioInits();
