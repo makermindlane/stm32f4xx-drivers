@@ -4,9 +4,9 @@
 #include "stm32f411xx_gpio_driver.h"
 
 /*
- * PB14 --> SPI2_MISO
  * PB15 --> SPI2_MOSI
- * PB13 -> SPI2_SCLK
+ * PB14 --> SPI2_MISO
+ * PB13 --> SPI2_SCLK
  * PB12 --> SPI2_NSS
  * ALT function mode : 5
  */
@@ -64,7 +64,7 @@ void gpioButtonInit() {
 
 	gpioButtonHandle.gpio = GPIOB;
 	gpioButtonHandle.pinCfg.pinMode = GPIO_PIN_MODE_IN;
-	gpioButtonHandle.pinCfg.pinNumber = GPIO_PIN_NO_0;
+	gpioButtonHandle.pinCfg.pinNumber = GPIO_PIN_NO_2;
 	gpioButtonHandle.pinCfg.pinPuPd = GPIO_PIN_PUPD_PD;
 	gpioButtonHandle.pinCfg.pinSpeed = GPIO_PIN_SPEED_FAST;
 
@@ -85,7 +85,7 @@ int main(void) {
 
 	while (1) {
 		// Wait for button press to initiate the communication.
-		while (!(gpio_readFromInputPin(GPIOB, GPIO_PIN_NO_0)))
+		while (!(gpio_readFromInputPin(GPIOB, GPIO_PIN_NO_2)))
 			;
 		// Debouncing
 		delay();
