@@ -10,7 +10,7 @@
  * SPI2_MISO --> PB14
  * SPI2_SCLK --> PB13
  * SPI2_NSS  --> PB12
- */
+// */
 
 
 //command codes
