@@ -393,7 +393,7 @@ static void spiTxeItHandle(SPI_Handle_t *spiHandle) {
 }
 
 
-static void spiRxneIntHandle(SPI_Handle_t *spiHandle) {
+static void spiRxneItHandle(SPI_Handle_t *spiHandle) {
 
 	if (IS_BIT_SET(spiHandle->spi->CR1, SPI_CR1_DFF)) {
 		// data is 16 bit wide
@@ -416,7 +416,7 @@ static void spiRxneIntHandle(SPI_Handle_t *spiHandle) {
 }
 
 
-static void spiOvrErrIntHandle(SPI_Handle_t *spiHandle) {
+static void spiOvrErrItHandle(SPI_Handle_t *spiHandle) {
 	uint8_t temp;
 	// if the spi peripheral is not busy in transmission
 	if (spiHandle->txState != SPI_STATE_BUSY_IN_TX) {

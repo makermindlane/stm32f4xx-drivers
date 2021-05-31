@@ -187,9 +187,6 @@ void spi2GpioInit() {
 	GPIO_Handle_t spiGpioHandle;
 
 	spiGpioHandle.gpio = GPIOB;
-
-//	memset(&spiGpioHandle.pinCfg, 0, sizeof(spiGpioHandle.pinCfg));
-
 	spiGpioHandle.pinCfg.pinAF = GPIO_PIN_AF_5;
 	spiGpioHandle.pinCfg.pinMode = GPIO_PIN_MODE_AF;
 	spiGpioHandle.pinCfg.pinOPType = GPIO_PIN_OPTYPE_PP;
@@ -224,9 +221,6 @@ void spi2Init() {
 	SPI_Handle_t spiHandle;
 
 	spiHandle.spi = SPI2;
-
-//	memset(&spiHandle.spiPinCfg, 0, sizeof(spiHandle.spiPinCfg));
-
 	spiHandle.spiCfg.busCfg = SPI_BUS_CFG_FD;
 	spiHandle.spiCfg.cpha = SPI_CPHA_LOW;
 	spiHandle.spiCfg.cpol = SPI_CPOL_LOW;

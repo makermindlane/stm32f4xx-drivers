@@ -445,23 +445,6 @@ typedef struct {
  *********************************************************************************************************************/
 
 
-///*
-// * Some generic macros
-// */
-//#define ENABLE								1
-//#define DISABLE								0
-//#define SET									ENABLE
-//#define RESET								DISABLE
-//#define GPIO_PIN_SET						SET
-//#define GPIO_PIN_RESET						RESET
-//
-//#define IS_BIT_SET(reg, bit)				((reg) & (1 << (bit)))
-//#define IS_BIT_RESET(reg, bit)				(!IS_BIT_SET(reg, bit))
-//#define WAIT_UNTIL_SET(reg, bit)			while (!IS_BIT_SET(reg, bit))
-//#define WAIT_UNTIL_RESET(reg, bit)			while (IS_BIT_SET(reg, bit))
-
-
-
 
 /**********************************************************************************************************************
  *								START: Peripheral register bit position definitions
