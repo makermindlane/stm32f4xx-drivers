@@ -84,7 +84,7 @@ int main() {
 	while (1) {
 
 		// wait here until button goes down
-		while (!(gpio_readFromInputPin(GPIOB, GPIO_PIN_NO_4)));
+		while (!(gpio_readFromInputPin(GPIOB, GPIO_PIN_NO_2)));
 		// for debouncing purpose
 		delay();
 		// enables the spi peripheral
@@ -245,9 +245,9 @@ void buttonInit() {
 	buttonHandle.gpio = GPIOB;
 
 	buttonHandle.pinCfg.pinMode = GPIO_PIN_MODE_IN;
-	buttonHandle.pinCfg.pinNumber = GPIO_PIN_NO_4;
+	buttonHandle.pinCfg.pinNumber = GPIO_PIN_NO_2;
 	buttonHandle.pinCfg.pinOPType = GPIO_PIN_OPTYPE_PP;
-	buttonHandle.pinCfg.pinPuPd = GPIO_PIN_PUPD_PU;
+	buttonHandle.pinCfg.pinPuPd = GPIO_PIN_PUPD_PD;
 	buttonHandle.pinCfg.pinSpeed = GPIO_PIN_SPEED_FAST;
 
 	gpio_init(&buttonHandle);
@@ -271,7 +271,7 @@ uint8_t spiSendCmd(SPI_RegDef_t* spi, uint8_t cmdCode) {
 	uint8_t ackByte;
 
 	// wait here until button goes down
-	while (!(gpio_readFromInputPin(GPIOB, GPIO_PIN_NO_4)));
+	while (!(gpio_readFromInputPin(GPIOB, GPIO_PIN_NO_2)));
 	// for debouncing purpose
 	delay();
 
