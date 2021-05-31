@@ -37,7 +37,7 @@
 #define FAILURE					0
 
 
-extern void initialise_monitor_handles();
+//extern void initialise_monitor_handles();
 
 
 /**********************************************************************************************************************
@@ -57,7 +57,7 @@ uint8_t spiSendReadCmd(SPI_RegDef_t *spi, uint8_t cmdCode, uint8_t args[], uint8
 
 int main() {
 
-	initialise_monitor_handles();
+//	initialise_monitor_handles();
 
 	uint8_t cmdCode;
 	uint8_t args[2];
@@ -71,20 +71,20 @@ int main() {
 	buttonInit();
 
 
-		/*
-		 * SSOE = 1:
-		 * 		SPE = 1, hardware makes NSS = 0 and selects the slave.
-		 * 		SPE = 0, hardware makes NSS = 1 and doesn't selects the slave.
-		 * SSOE = 0:
-		 * 		This is a multi-master mode and we are not concerned about it right now.
-		 */
-		spi_ssoeConfig(SPI2, ENABLE);
+	/*
+	 * SSOE = 1:
+	 * 		SPE = 1, hardware makes NSS = 0 and selects the slave.
+	 * 		SPE = 0, hardware makes NSS = 1 and doesn't selects the slave.
+	 * SSOE = 0:
+	 * 		This is a multi-master mode and we are not concerned about it right now.
+	 */
+	spi_ssoeConfig(SPI2, ENABLE);
 
 
 	while (1) {
 
 		// wait here until button goes down
-		while (!(gpio_readFromInputPin(GPIOB, GPIO_PIN_NO_4)));
+		while (!(gpio_readFromInputPin(GPIOB, GPIO_PIN_NO_2)));
 		// for debouncing purpose
 		delay();
 		// enables the spi peripheral
@@ -114,7 +114,7 @@ int main() {
 
 			spi_sendData(SPI2, &dummyWrite, 1);
 			spi_receiveData(SPI2, &analogRead, 1);
-			printf("COMMAND_SENSOR_READ %d\n", analogRead);
+//			printf("COMMAND_SENSOR_READ %d\n", analogRead);
 
 		} else {
 			// handle error code (right now its just a simple infinite while loop to help in debugging
@@ -132,7 +132,7 @@ int main() {
 			delay();
 			spi_sendData(SPI2, &dummyWrite, 1);
 			spi_receiveData(SPI2, &ledStatus, 1);
-			printf("COMMAND_READ_LED %d\n",ledStatus);
+//			printf("COMMAND_READ_LED %d\n",ledStatus);
 
 		} else {
 			// handle error code (right now its just a simple infinite while loop to help in debugging
@@ -152,7 +152,7 @@ int main() {
 				spi_sendData(SPI2, &msg[i], 1);
 				spi_receiveData(SPI2, &dummyRead, 1);
 			}
-			printf("COMMAND_PRINT Executed \n");
+//			printf("COMMAND_PRINT Executed \n");
 		} else {
 			// handle error code (right now its just a simple infinite while loop to help in debugging
 			while (1);
@@ -245,9 +245,9 @@ void buttonInit() {
 	buttonHandle.gpio = GPIOB;
 
 	buttonHandle.pinCfg.pinMode = GPIO_PIN_MODE_IN;
-	buttonHandle.pinCfg.pinNumber = GPIO_PIN_NO_4;
+	buttonHandle.pinCfg.pinNumber = GPIO_PIN_NO_2;
 	buttonHandle.pinCfg.pinOPType = GPIO_PIN_OPTYPE_PP;
-	buttonHandle.pinCfg.pinPuPd = GPIO_PIN_PUPD_PU;
+	buttonHandle.pinCfg.pinPuPd = GPIO_PIN_PUPD_PD;
 	buttonHandle.pinCfg.pinSpeed = GPIO_PIN_SPEED_FAST;
 
 	gpio_init(&buttonHandle);
@@ -271,7 +271,7 @@ uint8_t spiSendCmd(SPI_RegDef_t* spi, uint8_t cmdCode) {
 	uint8_t ackByte;
 
 	// wait here until button goes down
-	while (!(gpio_readFromInputPin(GPIOB, GPIO_PIN_NO_4)));
+	while (!(gpio_readFromInputPin(GPIOB, GPIO_PIN_NO_2)));
 	// for debouncing purpose
 	delay();
 

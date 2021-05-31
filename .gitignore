@@ -3,3 +3,5 @@
 004PeriClockEnable
 /stm32f4xx-drivers/Debug
 /stm32f4xx-drivers/*Debug.cfg
+/stm32f4xx-drivers/.cproject
+/stm32f4xx-drivers/stm32f4xx-drivers Debug.launch

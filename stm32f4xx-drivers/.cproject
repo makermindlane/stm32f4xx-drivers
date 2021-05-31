@@ -141,9 +141,9 @@
                         					
                     </folderInfo>
                     					
-                    <fileInfo id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2008794016.1751893896" name="001i2c_test.c" rcbsApplicability="disable" resourcePath="Src/001i2c_test.c" toolsToInvoke="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.755360672.1645618237">
+                    <fileInfo id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2008794016.1698600644" name="007spi_tx_arduino.c" rcbsApplicability="disable" resourcePath="Src/007spi_tx_arduino.c" toolsToInvoke="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.755360672.2084585731">
                         						
-                        <tool id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.755360672.1645618237" name="MCU GCC Compiler" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.755360672"/>
+                        <tool id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.755360672.2084585731" name="MCU GCC Compiler" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.755360672"/>
                         					
                     </fileInfo>
                     					
