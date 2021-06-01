@@ -1,4 +1,4 @@
-//#include <string.h>
+#include <string.h>
 
 #include "stm32f411xx_spi_driver.h"
 #include "stm32f411xx_gpio_driver.h"
@@ -10,6 +10,13 @@
  * SPI2_SCLK --> PB13
  * SPI2_NSS  --> PB12
  */
+
+
+void delay() {
+	for (uint32_t i = 250000; i > 0; --i)
+		;
+}
+
 
 void spi2GpioInit() {
 
@@ -30,8 +37,8 @@ void spi2GpioInit() {
 	gpio_init(&spiGpioHandle);
 
 	// set MISO pin
-//	spiGpioHandle.pinCfg.pinNumber = GPIO_PIN_NO_14;
-//	gpio_init(&spiGpioHandle);
+	spiGpioHandle.pinCfg.pinNumber = GPIO_PIN_NO_14;
+	gpio_init(&spiGpioHandle);
 
 	// set SCLK pin
 	spiGpioHandle.pinCfg.pinNumber = GPIO_PIN_NO_13;
@@ -71,7 +78,7 @@ void buttonInit() {
 	buttonHandle.pinCfg.pinMode = GPIO_PIN_MODE_IN;
 	buttonHandle.pinCfg.pinNumber = GPIO_PIN_NO_4;
 	buttonHandle.pinCfg.pinOPType = GPIO_PIN_OPTYPE_PP;
-	buttonHandle.pinCfg.pinPuPd = GPIO_PIN_PUPD_PU;
+	buttonHandle.pinCfg.pinPuPd = GPIO_PIN_PUPD_PD;
 	buttonHandle.pinCfg.pinSpeed = GPIO_PIN_SPEED_FAST;
 
 	gpio_init(&buttonHandle);
@@ -91,7 +98,7 @@ int main() {
 
 		// wait here until button goes down
 		while (!(gpio_readFromInputPin(GPIOB, GPIO_PIN_NO_4)));
-
+		delay();
 		/*
 		 * SSOE = 1:
 		 * 		SPE = 1, hardware makes NSS = 0 and selects the slave.
