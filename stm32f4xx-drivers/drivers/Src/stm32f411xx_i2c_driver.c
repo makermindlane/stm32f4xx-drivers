@@ -61,6 +61,9 @@ void i2c_init(I2C_Handle_t *i2cHandle) {
 
 	uint32_t tempReg = 0;
 
+	// enable i2c peripheral clock control
+	i2c_periClockControl(i2cHandle->i2c, ENABLE);
+
 	// set ACK bit
 	tempReg |= i2cHandle->i2cCfg.ackCtrl << I2C_CR1_ACK;
 	i2cHandle->i2c->CR1 = tempReg;
