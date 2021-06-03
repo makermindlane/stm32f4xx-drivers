@@ -11,7 +11,6 @@ static void i2cGenerateStartCondition(I2C_RegDef_t * i2c);
 static void i2cGenerateStopCondition(I2C_RegDef_t * i2c);
 static void i2cExecuteAddressPhase(I2C_RegDef_t *i2c, uint8_t slaveAddr, uint8_t isRead);
 static void i2cClearAddrFlag(I2C_Handle_t *i2cHandle);
-static void i2cManageAck(I2C_RegDef_t *i2c, uint8_t isEnable);
 static void i2cCloseSendData(I2C_Handle_t *i2cHandle);
 static void i2cCloseReceiveData(I2C_Handle_t *i2cHandle);
 static void i2cMasterHandleRxneIt(I2C_Handle_t *i2cHandle);
@@ -51,6 +50,18 @@ void i2c_periClockControl(I2C_RegDef_t *i2c, uint8_t enOrDi) {
 		}
 	}
 
+}
+
+
+/*
+ * Enable or disable the ACK bit
+ */
+void i2c_manageAck(I2C_RegDef_t *i2c, uint8_t isEnable) {
+	if (isEnable == I2C_ACK_CTRL_ENABLE) {
+		i2c->CR1 |= (1 << I2C_CR1_ACK);
+	} else {
+		i2c->CR1 &= ~(1 << I2C_CR1_ACK);
+	}
 }
 
 
@@ -185,17 +196,15 @@ void i2c_masterReceiveData(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer, uint32_t 
 	// for 1 byte of data reception
 	if (len == 1) {
 		// disable the ACK
-		i2cManageAck(i2cHandle->i2c, I2C_ACK_CTRL_DISABLE);
-		// generate stop condition
-		i2cGenerateStopCondition(i2cHandle->i2c);
+		i2c_manageAck(i2cHandle->i2c, I2C_ACK_CTRL_DISABLE);
 		// clear the ADDR flag
 		i2cClearAddrFlag(i2cHandle);
 		// wait until RxNE bit is set in SR1 register, indicating data register is not empty
 		WAIT_UNTIL_SET(i2cHandle->i2c->SR1, I2C_SR1_RxNE);
+		// generate stop condition
+		i2cGenerateStopCondition(i2cHandle->i2c);
 		// read data into rx buffer
 		*rxBuffer = i2cHandle->i2c->DR;
-
-		return;
 	} else if (len > 1) {
 		// clear the ADDR flag
 		i2cClearAddrFlag(i2cHandle);
@@ -204,7 +213,7 @@ void i2c_masterReceiveData(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer, uint32_t 
 			WAIT_UNTIL_SET(i2cHandle->i2c->SR1, I2C_SR1_RxNE);
 			if (i == 2) {
 				// disable ACK
-				i2cManageAck(i2cHandle->i2c, I2C_ACK_CTRL_DISABLE);
+				i2c_manageAck(i2cHandle->i2c, I2C_ACK_CTRL_DISABLE);
 				// generate stop condition
 				i2cGenerateStopCondition(i2cHandle->i2c);
 			}
@@ -216,7 +225,7 @@ void i2c_masterReceiveData(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer, uint32_t 
 	}
 	// re-enable ACK
 	if (i2cHandle->i2cCfg.ackCtrl == I2C_ACK_CTRL_ENABLE) {
-		i2cManageAck(i2cHandle->i2c, I2C_ACK_CTRL_ENABLE);
+		i2c_manageAck(i2cHandle->i2c, I2C_ACK_CTRL_ENABLE);
 	}
 }
 
@@ -633,7 +642,7 @@ static void i2cClearAddrFlag(I2C_Handle_t *i2cHandle) {
 			if (i2cHandle->rxSize == 1) {
 				// Size is of 1 byte.
 				// Disable ack.
-				i2cManageAck(i2cHandle->i2c, I2C_ACK_CTRL_DISABLE);
+				i2c_manageAck(i2cHandle->i2c, I2C_ACK_CTRL_DISABLE);
 				// Clear the ADDR bit by reading both SR1 and SR2.
 				dummyRead = i2cHandle->i2c->SR1;
 				dummyRead = i2cHandle->i2c->SR2;
@@ -653,15 +662,6 @@ static void i2cClearAddrFlag(I2C_Handle_t *i2cHandle) {
 		dummyRead = i2cHandle->i2c->SR2;
 		// This typecasting is to avoid unused variable compiler warning.
 		(void) dummyRead;
-	}
-}
-
-
-static void i2cManageAck(I2C_RegDef_t *i2c, uint8_t isEnable) {
-	if (isEnable == I2C_ACK_CTRL_ENABLE) {
-		i2c->CR1 |= (1 << I2C_CR1_ACK);
-	} else {
-		i2c->CR1 &= ~(1 << I2C_CR1_ACK);
 	}
 }
 
@@ -694,7 +694,7 @@ static void i2cCloseReceiveData(I2C_Handle_t *i2cHandle) {
 
 	if(i2cHandle->i2cCfg.ackCtrl == I2C_ACK_CTRL_ENABLE)
 	{
-		i2cManageAck(i2cHandle->i2c, I2C_ACK_CTRL_ENABLE);
+		i2c_manageAck(i2cHandle->i2c, I2C_ACK_CTRL_ENABLE);
 	}
 }
 
@@ -715,7 +715,7 @@ static void i2cMasterHandleRxneIt(I2C_Handle_t *i2cHandle) {
 		if (i2cHandle->rxLen == 2) {
 			// Receiving byte is of 2 byte.
 			// Disable ack.
-			i2cManageAck(i2cHandle->i2c, I2C_ACK_CTRL_DISABLE);
+			i2c_manageAck(i2cHandle->i2c, I2C_ACK_CTRL_DISABLE);
 		}
 		// Read data register into receiver buffer.
 		*i2cHandle->rxBuffer = i2cHandle->i2c->DR;

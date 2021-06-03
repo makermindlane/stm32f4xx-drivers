@@ -111,6 +111,12 @@ void i2c_periClockControl(I2C_RegDef_t *i2c, uint8_t enOrDi);
 
 
 /*
+ * Enable or disable the ACK bit
+ */
+void i2c_manageAck(I2C_RegDef_t *i2c, uint8_t isEnable);
+
+
+/*
  * I2C Init
  */
 void i2c_init(I2C_Handle_t *i2cHandle);
