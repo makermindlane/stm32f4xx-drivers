@@ -73,20 +73,6 @@ void buttonInit() {
 }
 
 
-//static void masterGetDataLen(uint8_t *dataLen) {
-//	uint8_t cmd = CMD_GET_DATA_LEN;
-//	i2c_masterSendData(&i2c1Handle, &cmd, 1, SLAVE_ADDR);
-//	i2c_masterReceiveData(&i2c1Handle, dataLen, 1, SLAVE_ADDR);
-//}
-//
-//
-//static void masterGetData(uint8_t *dataBuff, uint8_t dataLen) {
-//	uint8_t cmd = CMD_GET_DATA;
-//	i2c_masterSendData(&i2c1Handle, &cmd, 1, SLAVE_ADDR);
-//	i2c_masterReceiveData(&i2c1Handle, dataBuff, dataLen, SLAVE_ADDR);
-//}
-
-
 int main() {
 
 	uint8_t dataLen;
@@ -115,18 +101,15 @@ int main() {
 		while (!(gpio_readFromInputPin(GPIOB, GPIO_PIN_NO_4)));
 		delay();
 
-//		masterGetDataLen(&dataLen);
-//		masterGetData(dataIn, dataLen);
-
 		// Get the data length
 		cmd = CMD_GET_DATA_LEN;
-		i2c_masterSendData(&i2c1Handle, &cmd, 1, SLAVE_ADDR);
-		i2c_masterReceiveData(&i2c1Handle, &dataLen, 1, SLAVE_ADDR);
+		i2c_masterSendData(&i2c1Handle, &cmd, 1, SLAVE_ADDR, ENABLE);
+		i2c_masterReceiveData(&i2c1Handle, &dataLen, 1, SLAVE_ADDR, ENABLE);
 
 		// Get the data
 		cmd = CMD_GET_DATA;
-		i2c_masterSendData(&i2c1Handle, &cmd, 1, SLAVE_ADDR);
-		i2c_masterReceiveData(&i2c1Handle, dataIn, dataLen, SLAVE_ADDR);
+		i2c_masterSendData(&i2c1Handle, &cmd, 1, SLAVE_ADDR, ENABLE);
+		i2c_masterReceiveData(&i2c1Handle, dataIn, dataLen, SLAVE_ADDR, DISABLE);
 
 	}
 

@@ -141,7 +141,7 @@ void i2c_deInit(I2C_RegDef_t *i2c) {
 /*
  * Master send api
  */
-void i2c_masterSendData(I2C_Handle_t *i2cHandle, uint8_t *txBuffer, uint32_t len, uint8_t slaveAddr) {
+void i2c_masterSendData(I2C_Handle_t *i2cHandle, uint8_t *txBuffer, uint32_t len, uint8_t slaveAddr, uint8_t repeatedStart) {
 
 	// generate start condition
 	i2cGenerateStartCondition(i2cHandle->i2c);
@@ -172,15 +172,17 @@ void i2c_masterSendData(I2C_Handle_t *i2cHandle, uint8_t *txBuffer, uint32_t len
 	WAIT_UNTIL_SET(i2cHandle->i2c->SR1, I2C_SR1_TxE);
 	WAIT_UNTIL_SET(i2cHandle->i2c->SR1, I2C_SR1_BTF);
 
-	// generate the stop condition
-	i2cGenerateStopCondition(i2cHandle->i2c);
+	// Generate the stop condition only if repeated start is disabled.
+	if (repeatedStart == DISABLE) {
+		i2cGenerateStopCondition(i2cHandle->i2c);
+	}
 }
 
 
 /*
  * Master receive data
  */
-void i2c_masterReceiveData(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer, uint32_t len, uint8_t slaveAddr) {
+void i2c_masterReceiveData(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer, uint32_t len, uint8_t slaveAddr, uint8_t repeatedStart) {
 	// generate start condition
 	i2cGenerateStartCondition(i2cHandle->i2c);
 
@@ -201,8 +203,10 @@ void i2c_masterReceiveData(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer, uint32_t 
 		i2cClearAddrFlag(i2cHandle);
 		// wait until RxNE bit is set in SR1 register, indicating data register is not empty
 		WAIT_UNTIL_SET(i2cHandle->i2c->SR1, I2C_SR1_RxNE);
-		// generate stop condition
-		i2cGenerateStopCondition(i2cHandle->i2c);
+		// Generate stop condition only if repeated start is disabled.
+		if (repeatedStart == DISABLE) {
+			i2cGenerateStopCondition(i2cHandle->i2c);
+		}
 		// read data into rx buffer
 		*rxBuffer = i2cHandle->i2c->DR;
 	} else if (len > 1) {
@@ -214,8 +218,10 @@ void i2c_masterReceiveData(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer, uint32_t 
 			if (i == 2) {
 				// disable ACK
 				i2c_manageAck(i2cHandle->i2c, I2C_ACK_CTRL_DISABLE);
-				// generate stop condition
-				i2cGenerateStopCondition(i2cHandle->i2c);
+				// Generate stop condition only if repeated start is disabled.
+				if (repeatedStart == DISABLE) {
+					i2cGenerateStopCondition(i2cHandle->i2c);
+				}
 			}
 			// read data into rx buffer
 			*rxBuffer = i2cHandle->i2c->DR;
