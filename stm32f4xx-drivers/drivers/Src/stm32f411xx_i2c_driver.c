@@ -584,10 +584,12 @@ static uint32_t rccGetPclk1Value() {
 	// for apb1 prescaler
 	temp = ((RCC->CFGR >> 10) & 0x7);
 	if (temp < 4) {
+		apb1Pres = 1;
+	} else {
 		apb1Pres = apb1Prescaler[temp - 4];
 	}
 
-	pClk1 = (sysClk / ahbPres) / apb1Pres;
+    pClk1 = (sysClk / ahbPres) / apb1Pres;
 
 	return pClk1;
 }
