@@ -111,6 +111,12 @@ void i2c_periClockControl(I2C_RegDef_t *i2c, uint8_t enOrDi);
 
 
 /*
+ * Enable or disable the ACK bit
+ */
+void i2c_manageAck(I2C_RegDef_t *i2c, uint8_t isEnable);
+
+
+/*
  * I2C Init
  */
 void i2c_init(I2C_Handle_t *i2cHandle);
@@ -125,13 +131,13 @@ void i2c_deInit(I2C_RegDef_t *i2c);
 /*
  * Master send data
  */
-void i2c_masterSendData(I2C_Handle_t *i2cHandle, uint8_t *txBuffer, uint32_t len, uint8_t slaveAddr);
+void i2c_masterSendData(I2C_Handle_t *i2cHandle, uint8_t *txBuffer, uint32_t len, uint8_t slaveAddr, uint8_t repeatedStart);
 
 
 /*
  * Master receive data
  */
-void i2c_masterReceiveData(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer, uint32_t len, uint8_t slaveAddr);
+void i2c_masterReceiveData(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer, uint32_t len, uint8_t slaveAddr, uint8_t repeatedStart);
 
 
 /*
@@ -185,6 +191,18 @@ void i2c_evIrqHandling(I2C_Handle_t *i2cHandle);
  * I2C error interrupt handler
  */
 void i2c_erIrqHandling(I2C_Handle_t *i2cHandle);
+
+
+/*
+ * Close the connection and reset the i2cHandle.
+ */
+void i2c_closeSendData(I2C_Handle_t *i2cHandle);
+
+
+/*
+ * Generates stop condition to release the bus.
+ */
+void i2c_generateStopCondition(I2C_RegDef_t * i2c);
 
 
 /*
