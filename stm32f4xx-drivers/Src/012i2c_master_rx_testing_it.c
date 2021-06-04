@@ -117,9 +117,9 @@ int main() {
 		// Get the data
 		cmd = CMD_GET_DATA;
 		// Wait until i2c state becomes ready.
-		while (i2c_masterSendData(&i2c1Handle, &cmd, 1, SLAVE_ADDR, ENABLE) != I2C_STATE_READY);
+		while (i2c_masterSendDataIt(&i2c1Handle, &cmd, 1, SLAVE_ADDR, ENABLE) != I2C_STATE_READY);
 		// Wait until i2c state becomes ready.
-		while (i2c_masterReceiveData(&i2c1Handle, dataIn, dataLen, SLAVE_ADDR, DISABLE) != I2C_STATE_READY);
+		while (i2c_masterReceiveDataIt(&i2c1Handle, dataIn, dataLen, SLAVE_ADDR, DISABLE) != I2C_STATE_READY);
 		while (rxComplete != SET);
 		rxComplete = RESET;
 	}

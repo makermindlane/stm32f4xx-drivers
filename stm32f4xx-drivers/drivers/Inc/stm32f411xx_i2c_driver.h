@@ -194,6 +194,18 @@ void i2c_erIrqHandling(I2C_Handle_t *i2cHandle);
 
 
 /*
+ * Close the connection and reset the i2cHandle.
+ */
+void i2c_closeSendData(I2C_Handle_t *i2cHandle);
+
+
+/*
+ * Generates stop condition to release the bus.
+ */
+void i2c_generateStopCondition(I2C_RegDef_t * i2c);
+
+
+/*
  * Application event callback
  */
 void i2c_appEventCallback(I2C_Handle_t *i2cHandle, uint8_t appEvent);

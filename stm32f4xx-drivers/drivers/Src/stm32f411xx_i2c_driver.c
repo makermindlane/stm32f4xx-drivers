@@ -1,17 +1,14 @@
 #include "stm32f411xx_i2c_driver.h"
 
-
-
 /**********************************************************************************************************************
  * 												START: Private functions prototypes
  *********************************************************************************************************************/
 
 static uint32_t rccGetPclk1Value();
-static void i2cGenerateStartCondition(I2C_RegDef_t * i2c);
-static void i2cGenerateStopCondition(I2C_RegDef_t * i2c);
-static void i2cExecuteAddressPhase(I2C_RegDef_t *i2c, uint8_t slaveAddr, uint8_t isRead);
+static void i2cGenerateStartCondition(I2C_RegDef_t *i2c);
+static void i2cExecuteAddressPhase(I2C_RegDef_t *i2c, uint8_t slaveAddr,
+		uint8_t isRead);
 static void i2cClearAddrFlag(I2C_Handle_t *i2cHandle);
-static void i2cCloseSendData(I2C_Handle_t *i2cHandle);
 static void i2cCloseReceiveData(I2C_Handle_t *i2cHandle);
 static void i2cMasterHandleRxneIt(I2C_Handle_t *i2cHandle);
 static void i2cMasterHandleTxeIt(I2C_Handle_t *i2cHandle);
@@ -23,9 +20,8 @@ static void i2cMasterHandleTxeIt(I2C_Handle_t *i2cHandle);
 /*
  * AHB and APB1 prescaler values
  */
-int16_t ahbPrescaler[8] = {2,4,8,16,64,128,256,512};
-uint8_t apb1Prescaler[4] = { 2, 4 , 8, 16};
-
+int16_t ahbPrescaler[8] = { 2, 4, 8, 16, 64, 128, 256, 512 };
+uint8_t apb1Prescaler[4] = { 2, 4, 8, 16 };
 
 /*
  * Peripheral clock setup
@@ -52,7 +48,6 @@ void i2c_periClockControl(I2C_RegDef_t *i2c, uint8_t enOrDi) {
 
 }
 
-
 /*
  * Enable or disable the ACK bit
  */
@@ -63,7 +58,6 @@ void i2c_manageAck(I2C_RegDef_t *i2c, uint8_t isEnable) {
 		i2c->CR1 &= ~(1 << I2C_CR1_ACK);
 	}
 }
-
 
 /*
  * I2C Init
@@ -86,7 +80,7 @@ void i2c_init(I2C_Handle_t *i2cHandle) {
 
 	// set device's own address
 	tempReg = i2cHandle->i2cCfg.deviceAddr << 1;
-	tempReg |= 1 << 14; 	// Don't know why but reference manual suggests to do it.
+	tempReg |= 1 << 14; // Don't know why but reference manual suggests to do it.
 	i2cHandle->i2c->OAR1 = tempReg;
 
 	// CCR calculations
@@ -121,7 +115,6 @@ void i2c_init(I2C_Handle_t *i2cHandle) {
 	i2cHandle->i2c->TRISE = (tempReg & 0x3F);
 }
 
-
 /*
  * I2C DeInit
  */
@@ -137,11 +130,11 @@ void i2c_deInit(I2C_RegDef_t *i2c) {
 
 }
 
-
 /*
  * Master send api
  */
-void i2c_masterSendData(I2C_Handle_t *i2cHandle, uint8_t *txBuffer, uint32_t len, uint8_t slaveAddr, uint8_t repeatedStart) {
+void i2c_masterSendData(I2C_Handle_t *i2cHandle, uint8_t *txBuffer,
+		uint32_t len, uint8_t slaveAddr, uint8_t repeatedStart) {
 
 	// generate start condition
 	i2cGenerateStartCondition(i2cHandle->i2c);
@@ -174,15 +167,15 @@ void i2c_masterSendData(I2C_Handle_t *i2cHandle, uint8_t *txBuffer, uint32_t len
 
 	// Generate the stop condition only if repeated start is disabled.
 	if (repeatedStart == DISABLE) {
-		i2cGenerateStopCondition(i2cHandle->i2c);
+		i2c_generateStopCondition(i2cHandle->i2c);
 	}
 }
-
 
 /*
  * Master receive data
  */
-void i2c_masterReceiveData(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer, uint32_t len, uint8_t slaveAddr, uint8_t repeatedStart) {
+void i2c_masterReceiveData(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer,
+		uint32_t len, uint8_t slaveAddr, uint8_t repeatedStart) {
 	// generate start condition
 	i2cGenerateStartCondition(i2cHandle->i2c);
 
@@ -205,7 +198,7 @@ void i2c_masterReceiveData(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer, uint32_t 
 		WAIT_UNTIL_SET(i2cHandle->i2c->SR1, I2C_SR1_RxNE);
 		// Generate stop condition only if repeated start is disabled.
 		if (repeatedStart == DISABLE) {
-			i2cGenerateStopCondition(i2cHandle->i2c);
+			i2c_generateStopCondition(i2cHandle->i2c);
 		}
 		// read data into rx buffer
 		*rxBuffer = i2cHandle->i2c->DR;
@@ -220,7 +213,7 @@ void i2c_masterReceiveData(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer, uint32_t 
 				i2c_manageAck(i2cHandle->i2c, I2C_ACK_CTRL_DISABLE);
 				// Generate stop condition only if repeated start is disabled.
 				if (repeatedStart == DISABLE) {
-					i2cGenerateStopCondition(i2cHandle->i2c);
+					i2c_generateStopCondition(i2cHandle->i2c);
 				}
 			}
 			// read data into rx buffer
@@ -235,30 +228,50 @@ void i2c_masterReceiveData(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer, uint32_t 
 	}
 }
 
-
 /*
  * Master send data interrupt api
  */
-uint8_t i2c_masterSendDataIt(I2C_Handle_t *i2cHandle, uint8_t *txBuffer, uint32_t len, uint8_t slaveAddr, uint8_t repeatedStart) {
+uint8_t i2c_masterSendDataIt(I2C_Handle_t *i2cHandle, uint8_t *txBuffer,
+		uint32_t len, uint8_t slaveAddr, uint8_t repeatedStart) {
+
 	uint8_t busystate = i2cHandle->txRxState;
 
-	if((busystate != I2C_STATE_BUSY_IN_TX) && (busystate != I2C_STATE_BUSY_IN_RX)) {
+	if ((busystate != I2C_STATE_BUSY_IN_TX)
+			&& (busystate != I2C_STATE_BUSY_IN_RX)) {
 		i2cHandle->txBuffer = txBuffer;
 		i2cHandle->txLen = len;
 		i2cHandle->txRxState = I2C_STATE_BUSY_IN_TX;
 		i2cHandle->devAddr = slaveAddr;
 		i2cHandle->repeatedStart = repeatedStart;
 
-		//Implement code to Generate START Condition
+		// Generate START Condition
 		i2cGenerateStartCondition(i2cHandle->i2c);
 
-		//Implement the code to enable ITBUFEN Control Bit
-		i2cHandle->i2c->CR2 |= ( 1 << I2C_CR2_ITBUFEN);
+		// Set ITBUFEN (Buffer interrupt enable) control bit to enable the generate of an interrupt whenever
+		// TxE (transmitters data register empty) bit or RxNE (receivers data register not empty) bit in SR1
+		// register is set.
+		i2cHandle->i2c->CR2 |= (1 << I2C_CR2_ITBUFEN);
 
-		//Implement the code to enable ITEVFEN Control Bit
+		// Set ITEVTEN (Event interrupt enable) control bit to enable the generate an interrupt whenever any
+		// of the following bits are set in SR1 and/or SR2 register:
+		// 		SB - Start bit (master mode)
+		//		ADDR - Address sent (master mode)/matched (slave mode)
+		// 		ADD10 - 10 bit header sent (master mode)
+		// 		STOPF - Stop detection (slave mode)
+		//		BTF - Byte transfer finished (with no TxE or RxNE event)
+		// 		TxE - Data register empty (transmitters) (if ITBUFEN is set)
+		// 		RxNE - Data register not empty (receivers) (if ITBUFEN is set)
 		i2cHandle->i2c->CR2 |= (1 << I2C_CR2_ITEVTEN);
 
-		//Implement the code to enable ITERREN Control Bit
+		// Set ITERREN (Error interrupt enable) control bit to enable the generation of an interrupt whenever
+		// any of the following bits are set in SR1 and/or SR2 register:
+		//		BERR - Bus error
+		//		ARLO - Arbitration lost (master mode)
+		//		AF - Acknowledge failure
+		//		OVR - Overrun/Underrun
+		// 		PECERR - PEC error in reception
+		// 		TIMEOUT - Timeout or Tlow error
+		//		SMBALERT - SMBus alert
 		i2cHandle->i2c->CR2 |= (1 << I2C_CR2_ITERREN);
 
 	}
@@ -266,14 +279,15 @@ uint8_t i2c_masterSendDataIt(I2C_Handle_t *i2cHandle, uint8_t *txBuffer, uint32_
 	return busystate;
 }
 
-
 /*
  * Master receive data interrupt api
  */
-uint8_t i2c_masterReceiveDataIt(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer, uint32_t len, uint8_t slaveAddr, uint8_t repeatedStart) {
+uint8_t i2c_masterReceiveDataIt(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer,
+		uint32_t len, uint8_t slaveAddr, uint8_t repeatedStart) {
 	uint8_t busystate = i2cHandle->txRxState;
 
-	if((busystate != I2C_STATE_BUSY_IN_TX) && (busystate != I2C_STATE_BUSY_IN_RX)) {
+	if ((busystate != I2C_STATE_BUSY_IN_TX)
+			&& (busystate != I2C_STATE_BUSY_IN_RX)) {
 		i2cHandle->rxBuffer = rxBuffer;
 		i2cHandle->rxLen = len;
 		i2cHandle->txRxState = I2C_STATE_BUSY_IN_RX;
@@ -281,23 +295,37 @@ uint8_t i2c_masterReceiveDataIt(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer, uint
 		i2cHandle->devAddr = slaveAddr;
 		i2cHandle->repeatedStart = repeatedStart;
 
-		//Implement code to Generate START Condition
-		i2cGenerateStartCondition(i2cHandle->i2c);
+		// Set ITBUFEN (Buffer interrupt enable) control bit to enable the generate of an interrupt whenever
+		// TxE (transmitters data register empty) bit or RxNE (receivers data register not empty) bit in SR1
+		// register is set.
+		i2cHandle->i2c->CR2 |= (1 << I2C_CR2_ITBUFEN);
 
-		//Implement the code to enable ITBUFEN Control Bit
-		i2cHandle->i2c->CR2 |= ( 1 << I2C_CR2_ITBUFEN);
-
-		//Implement the code to enable ITEVFEN Control Bit
+		// Set ITEVTEN (Event interrupt enable) control bit to enable the generate an interrupt whenever any
+		// of the following bits are set in SR1 and/or SR2 register:
+		// 		SB - Start bit (master mode)
+		//		ADDR - Address sent (master mode)/matched (slave mode)
+		// 		ADD10 - 10 bit header sent (master mode)
+		// 		STOPF - Stop detection (slave mode)
+		//		BTF - Byte transfer finished (with no TxE or RxNE event)
+		// 		TxE - Data register empty (transmitters) (if ITBUFEN is set)
+		// 		RxNE - Data register not empty (receivers) (if ITBUFEN is set)
 		i2cHandle->i2c->CR2 |= (1 << I2C_CR2_ITEVTEN);
 
-		//Implement the code to enable ITERREN Control Bit
+		// Set ITERREN (Error interrupt enable) control bit to enable the generation of an interrupt whenever
+		// any of the following bits are set in SR1 and/or SR2 register:
+		//		BERR - Bus error
+		//		ARLO - Arbitration lost (master mode)
+		//		AF - Acknowledge failure
+		//		OVR - Overrun/Underrun
+		// 		PECERR - PEC error in reception
+		// 		TIMEOUT - Timeout or Tlow error
+		//		SMBALERT - SMBus alert
 		i2cHandle->i2c->CR2 |= (1 << I2C_CR2_ITERREN);
 
 	}
 
 	return busystate;
 }
-
 
 /*
  * Slave send data
@@ -306,14 +334,12 @@ void i2c_slaveSendData(I2C_RegDef_t *i2c, uint8_t data) {
 	i2c->DR = data;
 }
 
-
 /*
  * Slave receive data
  */
 uint8_t i2c_slaveReceiveData(I2C_RegDef_t *i2c) {
 	return (uint8_t) i2c->DR;
 }
-
 
 /*
  * I2C peripheral enable/disable
@@ -327,8 +353,6 @@ void i2c_peripheralControl(I2C_RegDef_t *i2c, uint8_t enOrDi) {
 		i2c->CR1 &= ~(1 << I2C_CR1_PE);
 	}
 }
-
-
 
 /*
  * I2C irq interrupt config
@@ -359,7 +383,6 @@ void i2c_irqInterruptConfig(uint8_t irqNumber, uint8_t enOrDi) {
 	}
 }
 
-
 /*
  * I2C irq priority config
  */
@@ -372,7 +395,6 @@ void i2c_irqPriorityConfig(uint8_t irqNumber, uint32_t irqPriority) {
 	*(NVIC_IPR_BASEADDR + iprx) |= (irqPriority << shiftAmount);
 
 }
-
 
 /*
  * I2C event interrupt handler
@@ -390,11 +412,12 @@ void i2c_evIrqHandling(I2C_Handle_t *i2cHandle) {
 	if (temp1 && temp3) {
 		// handle SB event.
 		// NOTE: SB event is generated only in master mode
-
 		if (i2cHandle->txRxState == I2C_STATE_BUSY_IN_TX) {
-			i2cExecuteAddressPhase(i2cHandle->i2c, i2cHandle->devAddr, I2C_MASTER_WRITE);
+			i2cExecuteAddressPhase(i2cHandle->i2c, i2cHandle->devAddr,
+			I2C_MASTER_WRITE);
 		} else if (i2cHandle->txRxState == I2C_STATE_BUSY_IN_RX) {
-			i2cExecuteAddressPhase(i2cHandle->i2c, i2cHandle->devAddr, I2C_MASTER_READ);
+			i2cExecuteAddressPhase(i2cHandle->i2c, i2cHandle->devAddr,
+			I2C_MASTER_READ);
 		}
 	}
 
@@ -420,9 +443,9 @@ void i2c_evIrqHandling(I2C_Handle_t *i2cHandle) {
 					// i2c stopping condition.
 					if (i2cHandle->repeatedStart == I2C_RS_DISABLE) {
 						// Repeated start is disabled, hence can generate stop condition.
-						i2cGenerateStopCondition(i2cHandle->i2c);
+						i2c_generateStopCondition(i2cHandle->i2c);
 						// Reset all the member variables of i2c handle struct.
-						i2cCloseSendData(i2cHandle);
+						i2c_closeSendData(i2cHandle);
 						// Notify application about transmission complete.
 						i2c_appEventCallback(i2cHandle, I2C_EVENT_TX_CMPLT);
 					}
@@ -482,7 +505,6 @@ void i2c_evIrqHandling(I2C_Handle_t *i2cHandle) {
 		}
 	}
 }
-
 
 /*
  * I2C error interrupt handler
@@ -545,15 +567,28 @@ void i2c_erIrqHandling(I2C_Handle_t *i2cHandle) {
 	}
 }
 
+void i2c_closeSendData(I2C_Handle_t *i2cHandle) {
+	//Implement the code to disable ITBUFEN Control Bit
+	i2cHandle->i2c->CR2 &= ~(1 << I2C_CR2_ITBUFEN);
+
+	//Implement the code to disable ITEVFEN Control Bit
+	i2cHandle->i2c->CR2 &= ~(1 << I2C_CR2_ITEVTEN);
+
+	i2cHandle->txRxState = I2C_STATE_READY;
+	i2cHandle->txBuffer = NULL;
+	i2cHandle->txLen = 0;
+}
+
+void i2c_generateStopCondition(I2C_RegDef_t *i2c) {
+	i2c->CR1 |= (1 << I2C_CR1_STOP);
+}
 
 /*
  * Application event callback
  */
-void i2c_appEventCallback(I2C_Handle_t *i2cHandle, uint8_t appEvent) {
+__weak void i2c_appEventCallback(I2C_Handle_t *i2cHandle, uint8_t appEvent) {
 
 }
-
-
 
 /**********************************************************************************************************************
  * 												START: Helper functions
@@ -565,7 +600,6 @@ void i2c_appEventCallback(I2C_Handle_t *i2cHandle, uint8_t appEvent) {
 static uint32_t rccGetPllOutputClk() {
 	return 16000000;
 }
-
 
 /*
  * Get the peripheral clock 1 value
@@ -604,23 +638,17 @@ static uint32_t rccGetPclk1Value() {
 		apb1Pres = apb1Prescaler[temp - 4];
 	}
 
-    pClk1 = (sysClk / ahbPres) / apb1Pres;
+	pClk1 = (sysClk / ahbPres) / apb1Pres;
 
 	return pClk1;
 }
 
-
-static void i2cGenerateStartCondition(I2C_RegDef_t * i2c) {
+static void i2cGenerateStartCondition(I2C_RegDef_t *i2c) {
 	i2c->CR1 |= (1 << I2C_CR1_START);
 }
 
-
-static void i2cGenerateStopCondition(I2C_RegDef_t * i2c) {
-	i2c->CR1 |= (1 << I2C_CR1_STOP);
-}
-
-
-static void i2cExecuteAddressPhase(I2C_RegDef_t *i2c, uint8_t slaveAddr, uint8_t isRead) {
+static void i2cExecuteAddressPhase(I2C_RegDef_t *i2c, uint8_t slaveAddr,
+		uint8_t isRead) {
 	// make room for read/write bit (zeroth bit)
 	slaveAddr = slaveAddr << 1;
 	if (isRead) {
@@ -633,7 +661,6 @@ static void i2cExecuteAddressPhase(I2C_RegDef_t *i2c, uint8_t slaveAddr, uint8_t
 	// put the slave address + read/write bit into data register (DR)
 	i2c->DR = slaveAddr;
 }
-
 
 static void i2cClearAddrFlag(I2C_Handle_t *i2cHandle) {
 	uint32_t dummyRead;
@@ -671,21 +698,6 @@ static void i2cClearAddrFlag(I2C_Handle_t *i2cHandle) {
 	}
 }
 
-
-static void i2cCloseSendData(I2C_Handle_t *i2cHandle) {
-	//Implement the code to disable ITBUFEN Control Bit
-	i2cHandle->i2c->CR2 &= ~(1 << I2C_CR2_ITBUFEN);
-
-	//Implement the code to disable ITEVFEN Control Bit
-	i2cHandle->i2c->CR2 &= ~(1 << I2C_CR2_ITEVTEN);
-
-
-	i2cHandle->txRxState = I2C_STATE_READY;
-	i2cHandle->txBuffer = NULL;
-	i2cHandle->txLen = 0;
-}
-
-
 static void i2cCloseReceiveData(I2C_Handle_t *i2cHandle) {
 	// Code to disable ITBUFEN Control Bit
 	i2cHandle->i2c->CR2 &= ~(1 << I2C_CR2_ITBUFEN);
@@ -698,12 +710,10 @@ static void i2cCloseReceiveData(I2C_Handle_t *i2cHandle) {
 	i2cHandle->rxLen = 0;
 	i2cHandle->rxSize = 0;
 
-	if(i2cHandle->i2cCfg.ackCtrl == I2C_ACK_CTRL_ENABLE)
-	{
+	if (i2cHandle->i2cCfg.ackCtrl == I2C_ACK_CTRL_ENABLE) {
 		i2c_manageAck(i2cHandle->i2c, I2C_ACK_CTRL_ENABLE);
 	}
 }
-
 
 static void i2cMasterHandleRxneIt(I2C_Handle_t *i2cHandle) {
 	// Check if size is 1 byte.
@@ -737,7 +747,7 @@ static void i2cMasterHandleRxneIt(I2C_Handle_t *i2cHandle) {
 		if (i2cHandle->repeatedStart == I2C_RS_DISABLE) {
 			// Repeated start is disabled.
 			// Generate stop condition.
-			i2cGenerateStopCondition(i2cHandle->i2c);
+			i2c_generateStopCondition(i2cHandle->i2c);
 		}
 		// Close the receive data.
 		i2cCloseReceiveData(i2cHandle);
@@ -745,7 +755,6 @@ static void i2cMasterHandleRxneIt(I2C_Handle_t *i2cHandle) {
 		i2c_appEventCallback(i2cHandle, I2C_EVENT_RX_CMPLT);
 	}
 }
-
 
 static void i2cMasterHandleTxeIt(I2C_Handle_t *i2cHandle) {
 	if (i2cHandle->txLen > 0) {
@@ -761,12 +770,4 @@ static void i2cMasterHandleTxeIt(I2C_Handle_t *i2cHandle) {
 /**********************************************************************************************************************
  * 												END: Helper functions
  *********************************************************************************************************************/
-
-
-
-
-
-
-
-
 
