@@ -42,7 +42,7 @@ void i2c1GpioInit() {
 	i2cGpioHandle.pinCfg.pinNumber = GPIO_PIN_NO_6;
 	gpio_init(&i2cGpioHandle);
 	// SDA pin
-	i2cGpioHandle.pinCfg.pinNumber = GPIO_PIN_NO_9;
+	i2cGpioHandle.pinCfg.pinNumber = GPIO_PIN_NO_7;
 	gpio_init(&i2cGpioHandle);
 
 }
@@ -78,7 +78,7 @@ void buttonInit() {
 int main() {
 
 	uint8_t dataLen;
-	uint8_t dataIn[255];
+	uint8_t dataIn[32];
 
 	uint8_t cmd;
 
@@ -96,11 +96,11 @@ int main() {
 	i2c_irqInterruptConfig(IRQ_NO_I2C1_ER, ENABLE);
 
 	// Enable i2c peripheral
-	i2c_peripheralControl(i2c1Handle.i2c, ENABLE);
+	i2c_peripheralControl(I2C1, ENABLE);
 
 	// Set the ACK bit here also. Why? Because without setting the PE bit (which is done in above line)
 	// ACK bit cannot be set, it will stay reset.
-	i2c_manageAck(i2c1Handle.i2c, ENABLE);
+	i2c_manageAck(I2C1, ENABLE);
 
 	while (1) {
 		// wait here until button goes down
@@ -113,13 +113,13 @@ int main() {
 		while (i2c_masterSendDataIt(&i2c1Handle, &cmd, 1, SLAVE_ADDR, ENABLE) != I2C_STATE_READY);
 		// Wait until i2c state becomes ready.
 		while (i2c_masterReceiveDataIt(&i2c1Handle, &dataLen, 1, SLAVE_ADDR, ENABLE) != I2C_STATE_READY);
-		rxComplete = RESET;
 		// Get the data
 		cmd = CMD_GET_DATA;
 		// Wait until i2c state becomes ready.
 		while (i2c_masterSendDataIt(&i2c1Handle, &cmd, 1, SLAVE_ADDR, ENABLE) != I2C_STATE_READY);
 		// Wait until i2c state becomes ready.
 		while (i2c_masterReceiveDataIt(&i2c1Handle, dataIn, dataLen, SLAVE_ADDR, DISABLE) != I2C_STATE_READY);
+		rxComplete = RESET;
 		while (rxComplete != SET);
 		rxComplete = RESET;
 	}
@@ -150,7 +150,7 @@ void i2c_appEventCallback(I2C_Handle_t *i2cHandle, uint8_t appEvent) {
 		// printf("Error: Ack failure\n");
 		i2c_closeSendData(i2cHandle);
 		// Generate the stop condition to release the bus.
-		i2c_generateStopCondition(i2cHandle->i2c);
+		i2c_generateStopCondition(I2C1);
 		// Hang in infinite loop
 		while (1);
 	}
