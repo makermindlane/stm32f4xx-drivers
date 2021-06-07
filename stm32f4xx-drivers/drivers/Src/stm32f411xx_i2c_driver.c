@@ -79,8 +79,9 @@ void i2c_init(I2C_Handle_t *i2cHandle) {
 	i2cHandle->i2c->CR2 = (tempReg & 0x3F);
 
 	// set device's own address
-	tempReg = i2cHandle->i2cCfg.deviceAddr << 1;
-	tempReg |= 1 << 14; // Don't know why but reference manual suggests to do it.
+	tempReg = 0;
+	tempReg |= i2cHandle->i2cCfg.deviceAddr << 1;
+	tempReg |= (1 << 14); // Don't know why but reference manual suggests to do it.
 	i2cHandle->i2c->OAR1 = tempReg;
 
 	// CCR calculations
@@ -295,6 +296,9 @@ uint8_t i2c_masterReceiveDataIt(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer,
 		i2cHandle->devAddr = slaveAddr;
 		i2cHandle->repeatedStart = repeatedStart;
 
+		// Generate START Condition
+		i2cGenerateStartCondition(i2cHandle->i2c);
+
 		// Set ITBUFEN (Buffer interrupt enable) control bit to enable the generate of an interrupt whenever
 		// TxE (transmitters data register empty) bit or RxNE (receivers data register not empty) bit in SR1
 		// register is set.
@@ -444,11 +448,11 @@ void i2c_evIrqHandling(I2C_Handle_t *i2cHandle) {
 					if (i2cHandle->repeatedStart == I2C_RS_DISABLE) {
 						// Repeated start is disabled, hence can generate stop condition.
 						i2c_generateStopCondition(i2cHandle->i2c);
-						// Reset all the member variables of i2c handle struct.
-						i2c_closeSendData(i2cHandle);
-						// Notify application about transmission complete.
-						i2c_appEventCallback(i2cHandle, I2C_EVENT_TX_CMPLT);
 					}
+					// Reset all the member variables of i2c handle struct.
+					i2c_closeSendData(i2cHandle);
+					// Notify application about transmission complete.
+					i2c_appEventCallback(i2cHandle, I2C_EVENT_TX_CMPLT);
 				}
 			}
 		}
