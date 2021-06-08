@@ -93,7 +93,6 @@ typedef struct {
 
 /******************************************************************************************
  *								APIs supported by this driver
- *		 For more information about the APIs check the function definitions
  ******************************************************************************************/
 /*
  * Peripheral Clock setup
