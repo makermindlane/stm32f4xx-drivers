@@ -38,11 +38,11 @@ void i2c_periClockControl(I2C_RegDef_t *i2c, uint8_t enOrDi) {
 		}
 	} else {
 		if (i2c == I2C1) {
-			SPI1_PCLK_DI();
+			I2C1_PCLK_DI();
 		} else if (i2c == I2C2) {
-			SPI2_PCLK_DI();
+			I2C2_PCLK_DI();
 		} else if (i2c == I2C3) {
-			SPI3_PCLK_DI();
+			I2C3_PCLK_DI();
 		}
 	}
 
