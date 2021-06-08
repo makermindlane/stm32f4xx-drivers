@@ -26,7 +26,7 @@ typedef struct {
 	USART_RegDef_t *usart;
 	USART_Config_t usartCfg;
 
-	void (*appEventCallback)(USART_Handle_t *, uint8_t);
+	void (*appEventCallback)(struct USART_Handle_t *, uint8_t);
 
 } USART_Handle_t;
 
@@ -35,9 +35,9 @@ typedef struct {
  *@USART_Mode
  *Possible options for USART_Mode
  */
-#define USART_MODE_ONLY_TX 0
-#define USART_MODE_ONLY_RX 1
-#define USART_MODE_TXRX  2
+#define USART_MODE_ONLY_TX 								0
+#define USART_MODE_ONLY_RX 								1
+#define USART_MODE_TXRX  								2
 
 /*
  *@USART_Baud
@@ -91,9 +91,9 @@ typedef struct {
 #define USART_HW_FLOW_CTRL_CTS_RTS						3
 
 
-/******************************************************************************************
- *								APIs supported by this driver
- ******************************************************************************************/
+/*********************************************************************************************************************
+ *											APIs supported by this driver
+ *********************************************************************************************************************/
 /*
  * Peripheral Clock setup
  */
@@ -112,7 +112,7 @@ void usart_deInit(USART_RegDef_t *usart);
 void usart_sendData(USART_RegDef_t *usart,uint8_t *txBuffer, uint32_t len);
 void usart_receiveData(USART_RegDef_t *usart, uint8_t *rxBuffer, uint32_t len);
 uint8_t usart_sendDataIT(USART_Handle_t *usartHandle,uint8_t *txBuffer, uint32_t len);
-uint8_t usart_receiveDataIT(usart_Handle_t *usartHandle, uint8_t *rxBuffer, uint32_t len);
+uint8_t usart_receiveDataIT(USART_Handle_t *usartHandle, uint8_t *rxBuffer, uint32_t len);
 
 /*
  * IRQ Configuration and ISR handling

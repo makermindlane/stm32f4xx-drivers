@@ -283,13 +283,13 @@ typedef struct {
  */
 typedef struct {
 
-	volatile uint32_t USART_SR;
-	volatile uint32_t USART_DR;
-	volatile uint32_t USART_BRR;
-	volatile uint32_t USART_CR1;
-	volatile uint32_t USART_CR2;
-	volatile uint32_t USART_CR3;
-	volatile uint32_t USART_GTPR;
+	volatile uint32_t SR;
+	volatile uint32_t DR;
+	volatile uint32_t BRR;
+	volatile uint32_t CR1;
+	volatile uint32_t CR2;
+	volatile uint32_t CR3;
+	volatile uint32_t GTPR;
 
 } USART_RegDef_t;
 
