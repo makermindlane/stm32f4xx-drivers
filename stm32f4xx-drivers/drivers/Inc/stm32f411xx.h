@@ -276,6 +276,24 @@ typedef struct {
 
 } I2C_RegDef_t;
 
+
+
+/*
+ * USART register definition
+ */
+typedef struct {
+
+	volatile uint32_t USART_SR;
+	volatile uint32_t USART_DR;
+	volatile uint32_t USART_BRR;
+	volatile uint32_t USART_CR1;
+	volatile uint32_t USART_CR2;
+	volatile uint32_t USART_CR3;
+	volatile uint32_t USART_GTPR;
+
+} USART_RegDef_t;
+
+
 /**********************************************************************************************************************
  *								END: Peripheral register definition structures
  *********************************************************************************************************************/
@@ -311,6 +329,10 @@ typedef struct {
 #define I2C1								((I2C_RegDef_t*) I2C1_BASEADDR)
 #define I2C2								((I2C_RegDef_t*) I2C2_BASEADDR)
 #define I2C3								((I2C_RegDef_t*) I2C3_BASEADDR)
+
+#define USART1								((USART_RegDef_t*) USART1_BASEADDR)
+#define USART2								((USART_RegDef_t*) USART2_BASEADDR)
+#define USART6								((USART_RegDef_t*) USART6_BASEADDR)
 
 /**********************************************************************************************************************
  *					END: Peripheral definitions typecasted to corresponding struct defs
@@ -440,6 +462,14 @@ typedef struct {
 #define I2C2_REG_RESET()					do { (RCC->APB1RSTR |= (1 << 22)); (RCC->APB1RSTR &= ~(1 << 22)); } while (0)
 #define I2C3_REG_RESET()					do { (RCC->APB1RSTR |= (1 << 23)); (RCC->APB1RSTR &= ~(1 << 23)); } while (0)
 
+
+/*
+ * USARTx peripheral reset macros
+ */
+#define USART1_REG_RESET()					do { (RCC->APB2RSTR |= (1 << 4)); (RCC->APB2RSTR &= ~(1 << 4)); } while (0)
+#define USART2_REG_RESET()					do { (RCC->APB1RSTR |= (1 << 17)); (RCC->APB1RSTR &= ~(1 << 17)); } while (0)
+#define USART6_REG_RESET()					do { (RCC->APB2RSTR |= (1 << 5)); (RCC->APB2RSTR &= ~(1 << 5)); } while (0)
+
 /**********************************************************************************************************************
  *										END: Peripheral register reset macros
  *********************************************************************************************************************/
@@ -542,12 +572,6 @@ typedef struct {
 
 
 /*
- * I2C_DR register bit position defines
- */
-
-
-
-/*
  * I2C_SR1 register bit position defines
  */
 #define I2C_SR1_SB							0
@@ -599,6 +623,87 @@ typedef struct {
 #define I2C_FLTR_DNF						0
 #define I2C_FLTR_ANOFF						4
 
+
+/*
+ * USART_SR register bit position defines
+ */
+#define USART_SR_PE							0
+#define USART_SR_FE							1
+#define USART_SR_NE							2
+#define USART_SR_ORE						3
+#define USART_SR_IDLE						4
+#define USART_SR_RXNE						5
+#define USART_SR_TC							6
+#define USART_SR_TXE						7
+#define USART_SR_LBD						8
+#define USART_SR_CTS						9
+
+
+/*
+ * USART_BRR register bit position defines
+ */
+#define USART_BRR_DIV_FRACTION				0
+#define USART_BRR_DIV_MANTISSA				4
+
+
+/*
+ * USART_CR1 register bit position defines
+ */
+#define USART_CR1_SBK						0
+#define USART_CR1_RWU						1
+#define USART_CR1_RE						2
+#define USART_CR1_TE						3
+#define USART_CR1_IDLEIE					4
+#define USART_CR1_RXNEIE					5
+#define USART_CR1_TCIE						6
+#define USART_CR1_TXEIE						7
+#define USART_CR1_PEIE						8
+#define USART_CR1_PS						9
+#define USART_CR1_PCE						10
+#define USART_CR1_WAKE						11
+#define USART_CR1_M							12
+#define USART_CR1_UE						13
+#define USART_CR1_OVER8						15
+
+
+/*
+ * USART_CR2 register bit position defines
+ */
+#define USART_CR2_ADD						0
+#define USART_CR2_LBDL						5
+#define USART_CR2_LBDIE						6
+#define USART_CR2_LBCL						8
+#define USART_CR2_CPHA						9
+#define USART_CR2_CPOL						10
+#define USART_CR2_CLKEN						11
+#define USART_CR2_STOP						12
+#define USART_CR2_LINEN						14
+
+
+/*
+ * USART_CR3 register bit position defines
+ */
+#define USART_CR3_EIE						0
+#define USART_CR3_IREN						1
+#define USART_CR3_IRLP						2
+#define USART_CR3_HDSEL						3
+#define USART_CR3_NACK						4
+#define USART_CR3_SCEN						5
+#define USART_CR3_DMAR						6
+#define USART_CR3_DMAT						7
+#define USART_CR3_RTSE						8
+#define USART_CR3_CTSE						9
+#define USART_CR3_CTSIE						10
+#define USART_CR3_ONEBIT					11
+
+
+/*
+ * USART_GTPR register bit position defines
+ */
+#define USART_GTPR_PSC						0
+#define USART_GTPR_GT						8
+
+
 /**********************************************************************************************************************
  *								END: Peripheral register bit position definitions
  *********************************************************************************************************************/
@@ -643,6 +748,11 @@ typedef struct {
 #define IRQ_NO_I2C2_ER						34
 #define IRQ_NO_I2C3_EV						72
 #define IRQ_NO_I2C3_ER						73
+
+#define IRQ_NO_USART1						37
+#define IRQ_NO_USART2						38
+#define IRQ_NO_USART6						71
+
 
 
 /*
