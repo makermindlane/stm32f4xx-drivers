@@ -345,6 +345,23 @@ uint8_t i2c_slaveReceiveData(I2C_RegDef_t *i2c) {
 	return (uint8_t) i2c->DR;
 }
 
+
+/*
+ * Enable or disable slave events callback
+ */
+void i2c_slaveCallbackEvents(I2C_RegDef_t *pI2Cx, uint8_t isEnable) {
+	if (isEnable == ENABLE) {
+		pI2Cx->CR2 |= (1 << I2C_CR2_ITEVTEN);
+		pI2Cx->CR2 |= (1 << I2C_CR2_ITBUFEN);
+		pI2Cx->CR2 |= (1 << I2C_CR2_ITERREN);
+	} else {
+		pI2Cx->CR2 &= ~(1 << I2C_CR2_ITEVTEN);
+		pI2Cx->CR2 &= ~(1 << I2C_CR2_ITBUFEN);
+		pI2Cx->CR2 &= ~(1 << I2C_CR2_ITERREN);
+	}
+
+}
+
 /*
  * I2C peripheral enable/disable
  */

@@ -74,7 +74,7 @@ typedef struct {
 
 
 /*
- * @I2C_EVENT
+ * I2C events and errors macros
  */
 #define I2C_EVENT_TX_CMPLT								1
 #define I2C_EVENT_RX_CMPLT								2
@@ -82,15 +82,11 @@ typedef struct {
 #define I2C_EVENT_DATA_REQ								4
 #define I2C_EVENT_DATA_RCV								5
 
-
-/*
- *
- */
-#define I2C_ERROR_BERR  								3
-#define I2C_ERROR_ARLO  								4
-#define I2C_ERROR_AF									5
-#define I2C_ERROR_OVR   								6
-#define I2C_ERROR_TIMEOUT 								7
+#define I2C_ERROR_BERR  								6
+#define I2C_ERROR_ARLO  								7
+#define I2C_ERROR_AF									8
+#define I2C_ERROR_OVR   								9
+#define I2C_ERROR_TIMEOUT 								10
 
 
 /*
@@ -162,6 +158,13 @@ void i2c_slaveSendData(I2C_RegDef_t *i2c, uint8_t data);
  * Slave receive data
  */
 uint8_t i2c_slaveReceiveData(I2C_RegDef_t *i2c);
+
+
+/*
+ * Enable or disable slave events callback
+ */
+void i2c_slaveCallbackEvents(I2C_RegDef_t *pI2Cx, uint8_t isEnable);
+
 
 /*
  * I2C peripheral enable/disable
