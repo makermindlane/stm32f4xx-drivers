@@ -25,10 +25,26 @@ typedef struct {
 
 	USART_RegDef_t *usart;
 	USART_Config_t usartCfg;
+	uint32_t txLen;
+	uint8_t *txBuffer;
+	uint8_t txBusyState;
+	uint32_t rxLen;
+	uint8_t *rxBuffer;
+	uint8_t rxBusyState;
 
 	void (*appEventCallback)(struct USART_Handle_t *, uint8_t);
 
 } USART_Handle_t;
+
+
+/*
+ * @USART_State
+ * Possible options for USART_State
+ */
+#define USART_STATE_READY								0
+#define USART_STATE_BUSY_IN_TX							1
+#define USART_STATE_BUSY_IN_RX							2
+
 
 
 /*
@@ -109,10 +125,10 @@ void usart_deInit(USART_RegDef_t *usart);
 /*
  * Data Send and Receive
  */
-void usart_sendData(USART_RegDef_t *usart,uint8_t *txBuffer, uint32_t len);
-void usart_receiveData(USART_RegDef_t *usart, uint8_t *rxBuffer, uint32_t len);
-uint8_t usart_sendDataIT(USART_Handle_t *usartHandle,uint8_t *txBuffer, uint32_t len);
-uint8_t usart_receiveDataIT(USART_Handle_t *usartHandle, uint8_t *rxBuffer, uint32_t len);
+void usart_sendData(USART_Handle_t *usartHandle, uint8_t *txBuffer, uint32_t len);
+void usart_receiveData(USART_Handle_t *usartHandle, uint8_t *rxBuffer, uint32_t len);
+uint8_t usart_sendDataIt(USART_Handle_t *usartHandle,uint8_t *txBuffer, uint32_t len);
+uint8_t usart_receiveDataIt(USART_Handle_t *usartHandle, uint8_t *rxBuffer, uint32_t len);
 
 /*
  * IRQ Configuration and ISR handling
