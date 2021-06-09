@@ -101,20 +101,16 @@ typedef struct {
 
 
 /*
- * SPI application states
+ * SPI application states and events
  */
-#define SPI_STATE_READY							0
-#define SPI_STATE_BUSY_IN_RX					1
-#define SPI_STATE_BUSY_IN_TX					2
+#define SPI_STATE_READY							1
+#define SPI_STATE_BUSY_IN_RX					2
+#define SPI_STATE_BUSY_IN_TX					3
 
-
-/*
- * SPI application events
- */
-#define SPI_EVENT_TX_CMPLT						1
-#define SPI_EVENT_RX_CMPLT						2
-#define SPI_EVENT_OVR_ERR						3
-#define SPI_EVENT_CRC_ERR						4
+#define SPI_EVENT_TX_CMPLT						4
+#define SPI_EVENT_RX_CMPLT						5
+#define SPI_EVENT_OVR_ERR						6
+#define SPI_EVENT_CRC_ERR						7
 
 
 /*
