@@ -163,6 +163,13 @@ void i2c_slaveSendData(I2C_RegDef_t *i2c, uint8_t data);
  */
 uint8_t i2c_slaveReceiveData(I2C_RegDef_t *i2c);
 
+
+/*
+ * Enable or disable slave events callback
+ */
+void i2c_slaveCallbackEvents(I2C_RegDef_t *pI2Cx, uint8_t isEnable);
+
+
 /*
  * I2C peripheral enable/disable
  */
