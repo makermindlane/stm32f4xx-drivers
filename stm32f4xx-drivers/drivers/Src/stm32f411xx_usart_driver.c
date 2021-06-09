@@ -39,7 +39,7 @@ void usart_periClockControl(USART_RegDef_t *usart, uint8_t isEnable) {
  * @Note              - Resolve all the TODOs
 
  */
-void USART_Init(USART_Handle_t *usartHandle) {
+void usart_init(USART_Handle_t *usartHandle) {
 
 	//Temporary variable
 	uint32_t tempreg = 0;
