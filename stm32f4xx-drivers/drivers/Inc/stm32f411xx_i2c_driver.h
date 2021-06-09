@@ -74,7 +74,7 @@ typedef struct {
 
 
 /*
- * @I2C_EVENT
+ * I2C events and errors macros
  */
 #define I2C_EVENT_TX_CMPLT								1
 #define I2C_EVENT_RX_CMPLT								2
@@ -82,15 +82,11 @@ typedef struct {
 #define I2C_EVENT_DATA_REQ								4
 #define I2C_EVENT_DATA_RCV								5
 
-
-/*
- *
- */
-#define I2C_ERROR_BERR  								3
-#define I2C_ERROR_ARLO  								4
-#define I2C_ERROR_AF									5
-#define I2C_ERROR_OVR   								6
-#define I2C_ERROR_TIMEOUT 								7
+#define I2C_ERROR_BERR  								6
+#define I2C_ERROR_ARLO  								7
+#define I2C_ERROR_AF									8
+#define I2C_ERROR_OVR   								9
+#define I2C_ERROR_TIMEOUT 								10
 
 
 /*
