@@ -26,6 +26,17 @@ void usart_periClockControl(USART_RegDef_t *usart, uint8_t isEnable) {
 }
 
 
+void usart_peripheralControl(USART_RegDef_t *usart, uint8_t isEnable) {
+	if (isEnable == ENABLE) {
+		// set SPE bit, i.e., enable I2C peripheral
+		usart->CR1 |= (1 << USART_CR1_UE);
+	} else {
+		// clear SPE bit i.e., disable I2C peripheral
+		usart->CR1 &= ~(1 << USART_CR1_UE);
+	}
+}
+
+
 /*********************************************************************
  * @fn      		  - USART_Init
  *
