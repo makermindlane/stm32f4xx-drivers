@@ -1,4 +1,5 @@
 #include "stm32f411xx_usart_driver.h"
+#include "stm32f411xx_rcc_driver.h"
 
 
 /*
@@ -113,7 +114,7 @@ void usart_init(USART_Handle_t *usartHandle) {
 	/******************************** Configuration of BRR(Baudrate register)******************************************/
 
 	//Implement the code to configure the baud rate
-	//We will cover this in the lecture. No action required here
+	usart_setBaudRate(usartHandle->usart, usartHandle->usartCfg.baud);
 }
 
 
@@ -125,6 +126,76 @@ void usart_deInit(USART_RegDef_t *usart) {
 	} else if (usart == USART6) {
 		USART6_REG_RESET();
 	}
+}
+
+
+/*********************************************************************
+ * @fn      		  - USART_SetBaudRate
+ *
+ * @brief             -
+ *
+ * @param[in]         -
+ * @param[in]         -
+ * @param[in]         -
+ *
+ * @return            -
+ *
+ * @Note              -  Resolve all the TODOs
+
+ */
+void usart_setBaudRate(USART_RegDef_t *usart, uint32_t baudRate) {
+
+	//Variable to hold the APB clock
+	uint32_t periClkx;
+	uint32_t usartdiv;
+	//variables to hold Mantissa and Fraction values
+	uint32_t mantissa, fraction;
+
+	uint32_t tempreg = 0;
+	//Get the value of APB bus clock in to the variable periClkx
+	if (usart == USART1 || usart == USART6) {
+		//USART1 and USART6 are hanging on APB2 bus
+		periClkx = rcc_getPclk2Value();
+	} else {
+		periClkx = rcc_getPclk1Value();
+	}
+
+	//Check for OVER8 configuration bit
+	if (IS_BIT_SET(usart->CR1, USART_CR1_OVER8)) {
+		//OVER8 = 1, over sampling by 8
+		// usartdiv = ((100 * periClk) / (2 * (2 - OVER8) * baudRate)).
+		// Here multiplication by 100 is done to make it an integer. Real formula doesn't have 100.
+		usartdiv = ((25 * periClkx) / (2 * baudRate));
+	} else {
+		//OVER8 = 0, over sampling by 16
+		usartdiv = ((25 * periClkx) / (4 * baudRate));
+	}
+
+	//Calculate the Mantissa part
+	mantissa = usartdiv / 100;
+
+	//Place the Mantissa part in appropriate bit position. Refer USART_BRR
+	tempreg |= mantissa << USART_BRR_DIV_MANTISSA;
+
+	//Extract the fraction part
+	fraction = (usartdiv - (mantissa * 100));
+
+	//Calculate the final fractional
+	if (IS_BIT_SET(usart->CR1, USART_CR1_OVER8)) {
+		//OVER8 = 1, over sampling by 8
+		fraction = (((fraction * 8) + 50) / 100) & ((uint8_t) 0x07);
+
+	} else {
+		//over sampling by 16
+		fraction = (((fraction * 16) + 50) / 100) & ((uint8_t) 0x0F);
+
+	}
+
+	//Place the fractional part in appropriate bit position. refer USART_BRR
+	tempreg |= fraction;
+
+	//copy the value of tempreg in to BRR register
+	usart->BRR = tempreg;
 }
 
 

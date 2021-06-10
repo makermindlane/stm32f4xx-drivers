@@ -123,6 +123,12 @@ void usart_deInit(USART_RegDef_t *usart);
 
 
 /*
+ * Set baud rate of USART
+ */
+void usart_setBaudRate(USART_RegDef_t *usart, uint32_t baudRate);
+
+
+/*
  * Data Send and Receive
  */
 void usart_sendData(USART_Handle_t *usartHandle, uint8_t *txBuffer, uint32_t len);

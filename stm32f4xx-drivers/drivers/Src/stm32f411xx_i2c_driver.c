@@ -1,13 +1,11 @@
 #include "stm32f411xx_i2c_driver.h"
+#include "stm32f411xx_rcc_driver.h"
 
 /**********************************************************************************************************************
  * 												START: Private functions prototypes
  *********************************************************************************************************************/
-
-static uint32_t rccGetPclk1Value();
 static void i2cGenerateStartCondition(I2C_RegDef_t *i2c);
-static void i2cExecuteAddressPhase(I2C_RegDef_t *i2c, uint8_t slaveAddr,
-		uint8_t isRead);
+static void i2cExecuteAddressPhase(I2C_RegDef_t *i2c, uint8_t slaveAddr, uint8_t isRead);
 static void i2cClearAddrFlag(I2C_Handle_t *i2cHandle);
 static void i2cCloseReceiveData(I2C_Handle_t *i2cHandle);
 static void i2cMasterHandleRxneIt(I2C_Handle_t *i2cHandle);
@@ -16,12 +14,6 @@ static void i2cMasterHandleTxeIt(I2C_Handle_t *i2cHandle);
 /**********************************************************************************************************************
  * 												END: Functions prototypes
  *********************************************************************************************************************/
-
-/*
- * AHB and APB1 prescaler values
- */
-int16_t ahbPrescaler[8] = { 2, 4, 8, 16, 64, 128, 256, 512 };
-uint8_t apb1Prescaler[4] = { 2, 4, 8, 16 };
 
 /*
  * Peripheral clock setup
@@ -75,7 +67,7 @@ void i2c_init(I2C_Handle_t *i2cHandle) {
 
 	// configure the FREQ bits
 	tempReg = 0;
-	tempReg = rccGetPclk1Value() / 1000000;
+	tempReg = rcc_getPclk1Value() / 1000000;
 	i2cHandle->i2c->CR2 = (tempReg & 0x3F);
 
 	// set device's own address
@@ -89,7 +81,7 @@ void i2c_init(I2C_Handle_t *i2cHandle) {
 	tempReg = 0;
 	if (i2cHandle->i2cCfg.sclSpeed <= I2C_SCL_SPEED_SM) {
 		// mode is standard mode
-		ccr = (rccGetPclk1Value() / (2 * i2cHandle->i2cCfg.sclSpeed));
+		ccr = (rcc_getPclk1Value() / (2 * i2cHandle->i2cCfg.sclSpeed));
 		tempReg |= (ccr & 0xFFF);
 	} else {
 		// mode is fast mode
@@ -97,9 +89,9 @@ void i2c_init(I2C_Handle_t *i2cHandle) {
 		tempReg |= (i2cHandle->i2cCfg.fmDutyCycle << I2C_CCR_DUTY);
 
 		if (i2cHandle->i2cCfg.fmDutyCycle == I2C_FM_DUTY_CYCLE_2) {
-			ccr = (rccGetPclk1Value() / (3 * i2cHandle->i2cCfg.sclSpeed));
+			ccr = (rcc_getPclk1Value() / (3 * i2cHandle->i2cCfg.sclSpeed));
 		} else {
-			ccr = (rccGetPclk1Value() / (25 * i2cHandle->i2cCfg.sclSpeed));
+			ccr = (rcc_getPclk1Value() / (25 * i2cHandle->i2cCfg.sclSpeed));
 		}
 		tempReg |= (ccr & 0xFFF);
 	}
@@ -108,10 +100,10 @@ void i2c_init(I2C_Handle_t *i2cHandle) {
 	// TRISE configuration
 	if (i2cHandle->i2cCfg.sclSpeed <= I2C_SCL_SPEED_SM) {
 		// mode is standard mode
-		tempReg = (rccGetPclk1Value() / 1000000U) + 1;
+		tempReg = (rcc_getPclk1Value() / 1000000U) + 1;
 	} else {
 		// mode is fast mode
-		tempReg = ((rccGetPclk1Value() * 300) / 1000000000U) + 1;
+		tempReg = ((rcc_getPclk1Value() * 300) / 1000000000U) + 1;
 	}
 	i2cHandle->i2c->TRISE = (tempReg & 0x3F);
 }
@@ -134,8 +126,8 @@ void i2c_deInit(I2C_RegDef_t *i2c) {
 /*
  * Master send api
  */
-void i2c_masterSendData(I2C_Handle_t *i2cHandle, uint8_t *txBuffer,
-		uint32_t len, uint8_t slaveAddr, uint8_t repeatedStart) {
+void i2c_masterSendData(I2C_Handle_t *i2cHandle, uint8_t *txBuffer, uint32_t len, uint8_t slaveAddr,
+		uint8_t repeatedStart) {
 
 	// generate start condition
 	i2cGenerateStartCondition(i2cHandle->i2c);
@@ -175,8 +167,8 @@ void i2c_masterSendData(I2C_Handle_t *i2cHandle, uint8_t *txBuffer,
 /*
  * Master receive data
  */
-void i2c_masterReceiveData(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer,
-		uint32_t len, uint8_t slaveAddr, uint8_t repeatedStart) {
+void i2c_masterReceiveData(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer, uint32_t len, uint8_t slaveAddr,
+		uint8_t repeatedStart) {
 	// generate start condition
 	i2cGenerateStartCondition(i2cHandle->i2c);
 
@@ -232,13 +224,12 @@ void i2c_masterReceiveData(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer,
 /*
  * Master send data interrupt api
  */
-uint8_t i2c_masterSendDataIt(I2C_Handle_t *i2cHandle, uint8_t *txBuffer,
-		uint32_t len, uint8_t slaveAddr, uint8_t repeatedStart) {
+uint8_t i2c_masterSendDataIt(I2C_Handle_t *i2cHandle, uint8_t *txBuffer, uint32_t len, uint8_t slaveAddr,
+		uint8_t repeatedStart) {
 
 	uint8_t busystate = i2cHandle->txRxState;
 
-	if ((busystate != I2C_STATE_BUSY_IN_TX)
-			&& (busystate != I2C_STATE_BUSY_IN_RX)) {
+	if ((busystate != I2C_STATE_BUSY_IN_TX) && (busystate != I2C_STATE_BUSY_IN_RX)) {
 		i2cHandle->txBuffer = txBuffer;
 		i2cHandle->txLen = len;
 		i2cHandle->txRxState = I2C_STATE_BUSY_IN_TX;
@@ -283,12 +274,11 @@ uint8_t i2c_masterSendDataIt(I2C_Handle_t *i2cHandle, uint8_t *txBuffer,
 /*
  * Master receive data interrupt api
  */
-uint8_t i2c_masterReceiveDataIt(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer,
-		uint32_t len, uint8_t slaveAddr, uint8_t repeatedStart) {
+uint8_t i2c_masterReceiveDataIt(I2C_Handle_t *i2cHandle, uint8_t *rxBuffer, uint32_t len, uint8_t slaveAddr,
+		uint8_t repeatedStart) {
 	uint8_t busystate = i2cHandle->txRxState;
 
-	if ((busystate != I2C_STATE_BUSY_IN_TX)
-			&& (busystate != I2C_STATE_BUSY_IN_RX)) {
+	if ((busystate != I2C_STATE_BUSY_IN_TX) && (busystate != I2C_STATE_BUSY_IN_RX)) {
 		i2cHandle->rxBuffer = rxBuffer;
 		i2cHandle->rxLen = len;
 		i2cHandle->txRxState = I2C_STATE_BUSY_IN_RX;
@@ -344,7 +334,6 @@ void i2c_slaveSendData(I2C_RegDef_t *i2c, uint8_t data) {
 uint8_t i2c_slaveReceiveData(I2C_RegDef_t *i2c) {
 	return (uint8_t) i2c->DR;
 }
-
 
 /*
  * Enable or disable slave events callback
@@ -615,61 +604,11 @@ __weak void i2c_appEventCallback(I2C_Handle_t *i2cHandle, uint8_t appEvent) {
  * 												START: Helper functions
  *********************************************************************************************************************/
 
-/*
- * Get the PLL clock value (as of now it does nothing)
- */
-static uint32_t rccGetPllOutputClk() {
-	return 16000000;
-}
-
-/*
- * Get the peripheral clock 1 value
- */
-static uint32_t rccGetPclk1Value() {
-
-	uint32_t sysClk, pClk1;
-	uint8_t clkSrc, temp, ahbPres, apb1Pres;
-	// get the clock source
-	clkSrc = ((RCC->CFGR >> 2) & 0x3);
-
-	if (clkSrc == 0) {
-		// HSI is selected as system clock source
-		sysClk = 16000000;
-	} else if (clkSrc == 1) {
-		// HSE is selected as system clock source
-		sysClk = 8000000;
-	} else if (clkSrc == 2) {
-		// PLL is selected as system clock source
-		sysClk = rccGetPllOutputClk();
-	}
-
-	// for ahb prescaler
-	temp = ((RCC->CFGR >> 4) & 0xF);
-	if (temp < 8) {
-		ahbPres = 1;
-	} else {
-		ahbPres = ahbPrescaler[temp - 8];
-	}
-
-	// for apb1 prescaler
-	temp = ((RCC->CFGR >> 10) & 0x7);
-	if (temp < 4) {
-		apb1Pres = 1;
-	} else {
-		apb1Pres = apb1Prescaler[temp - 4];
-	}
-
-	pClk1 = (sysClk / ahbPres) / apb1Pres;
-
-	return pClk1;
-}
-
 static void i2cGenerateStartCondition(I2C_RegDef_t *i2c) {
 	i2c->CR1 |= (1 << I2C_CR1_START);
 }
 
-static void i2cExecuteAddressPhase(I2C_RegDef_t *i2c, uint8_t slaveAddr,
-		uint8_t isRead) {
+static void i2cExecuteAddressPhase(I2C_RegDef_t *i2c, uint8_t slaveAddr, uint8_t isRead) {
 	// make room for read/write bit (zeroth bit)
 	slaveAddr = slaveAddr << 1;
 	if (isRead) {
