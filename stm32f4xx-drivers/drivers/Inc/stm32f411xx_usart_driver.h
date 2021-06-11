@@ -36,15 +36,33 @@ typedef struct {
 
 } USART_Handle_t;
 
-
 /*
  * @USART_State
  * Possible options for USART_State
  */
-#define USART_STATE_READY								0
-#define USART_STATE_BUSY_IN_TX							1
-#define USART_STATE_BUSY_IN_RX							2
+#define USART_STATE_READY								1
+#define USART_STATE_BUSY_IN_TX							2
+#define USART_STATE_BUSY_IN_RX							3
 
+
+/*
+ * @USART_Event
+ * Possible options for USART_Event
+ */
+#define USART_EVENT_TX_CMPLT							4
+#define USART_EVENT_RX_CMPLT							5
+#define USART_EVENT_CTS									6
+#define USART_EVENT_IDLE								7
+#define USART_EVENT_ORE									8
+
+
+/*
+ * @USART_ERREVENT
+ * Possible options for USART_ERREVENT
+ */
+#define USART_ERREVENT_FE								9
+#define USART_ERREVENT_NE								10
+#define USART_ERREVENT_ORE								11
 
 
 /*
@@ -148,6 +166,14 @@ void usart_irqHandling(USART_Handle_t *usartHandle);
  */
 void usart_peripheralControl(USART_RegDef_t *usart, uint8_t isEnable);
 
+/*
+ * Application event callback fucntion
+ */
+__weak void usart_appEventCallback(USART_Handle_t *usartHandle, uint8_t appEvent);
 
+/*
+ * Function to clear the ORE flag
+ */
+void usart_clearORE(USART_RegDef_t *usart);
 
 #endif /* INC_STM32F411XX_USART_DRIVER_H_ */

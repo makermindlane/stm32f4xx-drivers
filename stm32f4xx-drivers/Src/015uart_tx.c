@@ -16,6 +16,8 @@ char msg[1024] = "UART Tx testing...\n\r";
 
 USART_Handle_t usart2_handle;
 
+void eventCallback(USART_Handle_t *usartHandle, uint8_t appEvent);
+
 void USART2_Init(void) {
 	usart2_handle.usart = USART2;
 	usart2_handle.usartCfg.baud = USART_STD_BAUD_115200;
@@ -24,6 +26,9 @@ void USART2_Init(void) {
 	usart2_handle.usartCfg.noOfStopBits = USART_STOPBITS_1;
 	usart2_handle.usartCfg.wordLength = USART_WORDLEN_8BITS;
 	usart2_handle.usartCfg.parityControl = USART_PARITY_DISABLE;
+
+	usart2_handle.appEventCallback = eventCallback;
+
 	usart_init(&usart2_handle);
 }
 
@@ -101,4 +106,9 @@ int main(void) {
 	}
 
 	return 0;
+}
+
+
+void eventCallback(USART_Handle_t *usartHandle, uint8_t appEvent) {
+
 }
