@@ -365,7 +365,7 @@ uint8_t usart_sendDataIt(USART_Handle_t *usartHandle, uint8_t *txBuffer, uint32_
  * @Note              - Resolve all the TODOs
 
  */
-uint8_t USART_ReceiveDataIT(USART_Handle_t *usartHandle, uint8_t *rxBuffer, uint32_t len) {
+uint8_t usart_receiveDataIt(USART_Handle_t *usartHandle, uint8_t *rxBuffer, uint32_t len) {
 	uint8_t rxstate = usartHandle->rxBusyState;
 
 	if (rxstate != USART_STATE_BUSY_IN_RX) {

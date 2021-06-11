@@ -423,11 +423,9 @@ void i2c_evIrqHandling(I2C_Handle_t *i2cHandle) {
 		// handle SB event.
 		// NOTE: SB event is generated only in master mode
 		if (i2cHandle->txRxState == I2C_STATE_BUSY_IN_TX) {
-			i2cExecuteAddressPhase(i2cHandle->i2c, i2cHandle->devAddr,
-			I2C_MASTER_WRITE);
+			i2cExecuteAddressPhase(i2cHandle->i2c, i2cHandle->devAddr, I2C_MASTER_WRITE);
 		} else if (i2cHandle->txRxState == I2C_STATE_BUSY_IN_RX) {
-			i2cExecuteAddressPhase(i2cHandle->i2c, i2cHandle->devAddr,
-			I2C_MASTER_READ);
+			i2cExecuteAddressPhase(i2cHandle->i2c, i2cHandle->devAddr, I2C_MASTER_READ);
 		}
 	}
 

@@ -55,21 +55,21 @@ void GPIO_ButtonInit(void) {
 	GPIOBtn.pinCfg.pinNumber = GPIO_PIN_NO_4;
 	GPIOBtn.pinCfg.pinMode = GPIO_PIN_MODE_IN;
 	GPIOBtn.pinCfg.pinSpeed = GPIO_PIN_SPEED_FAST;
-	GPIOBtn.pinCfg.pinPuPd = GPIO_PIN_PUPD_NO;
+	GPIOBtn.pinCfg.pinPuPd = GPIO_PIN_PUPD_PD;
 
 	gpio_init(&GPIOBtn);
 
 	//this is led gpio configuration
-//	GpioLed.pGPIOx = GPIOD;
-//	GpioLed.pinCfg.pinNumber = GPIO_PIN_NO_12;
-//	GpioLed.pinCfg.pinMode = GPIO_MODE_OUT;
-//	GpioLed.pinCfg.pinSpeed = GPIO_SPEED_FAST;
-//	GpioLed.pinCfg.pinOPType = GPIO_OP_TYPE_OD;
-//	GpioLed.pinCfg.pinPuPd = GPIO_NO_PUPD;
-//
-//	GPIO_PeriClockControl(GPIOD, ENABLE);
-//
-//	GPIO_Init(&GpioLed);
+	//	GpioLed.pGPIOx = GPIOD;
+	//	GpioLed.pinCfg.pinNumber = GPIO_PIN_NO_12;
+	//	GpioLed.pinCfg.pinMode = GPIO_MODE_OUT;
+	//	GpioLed.pinCfg.pinSpeed = GPIO_SPEED_FAST;
+	//	GpioLed.pinCfg.pinOPType = GPIO_OP_TYPE_OD;
+	//	GpioLed.pinCfg.pinPuPd = GPIO_NO_PUPD;
+	//
+	//	GPIO_PeriClockControl(GPIOD, ENABLE);
+	//
+	//	GPIO_Init(&GpioLed);
 
 }
 
