@@ -11,8 +11,6 @@
 #include <stdint.h>
 #include <stddef.h>
 
-
-
 /**********************************************************************************************************************
  *					START: Some defines (could be used in future for platform independent purposes
  *********************************************************************************************************************/
@@ -22,8 +20,6 @@
 /**********************************************************************************************************************
  *					START: Some defines (could be used in future for platform independent purposes
  *********************************************************************************************************************/
-
-
 
 /**********************************************************************************************************************
  *										 START: Processor specific details
@@ -37,7 +33,6 @@
 #define NVIC_ISER2							((volatile uint32_t*) 0xE000E108)
 #define NVIC_ISER3							((volatile uint32_t*) 0xE000E10C)
 
-
 /*
  * ARM cortex M4 processor NVIC ICERx register addresses
  */
@@ -46,15 +41,12 @@
 #define NVIC_ICER2							((volatile uint32_t*) 0xE000E188)
 #define NVIC_ICER3							((volatile uint32_t*) 0xE000E18C)
 
-
 /*
  * ARM cortex M4 processor NVIC IPRx register addresses
  */
 #define NVIC_IPR_BASEADDR					((volatile uint32_t*) 0xE000E400)
 
-
 #define NO_PR_BITS_IMPLEMENTED				(4)
-
 
 /*
  * NVIC interrupt priority possible values
@@ -80,8 +72,6 @@
  *										END: Processor specific details
  *********************************************************************************************************************/
 
-
-
 /**********************************************************************************************************************
  *										 START: Register Base addresses
  *********************************************************************************************************************/
@@ -94,7 +84,6 @@
 #define ROM_BASEADDR						0x1FFF0000U
 #define SRAM								SRAM1_BASEADDR
 
-
 /*
  * AHBx and APBx Bus Peripheral base addresses
  */
@@ -103,7 +92,6 @@
 #define APB2PERIPH_BASEADDR					0x40010000U
 #define AHB1PERIPH_BASEADDR					0x40020000U
 #define AHB2PERIPH_BASEADDR 				0x50000000U
-
 
 /*
  * Base addresses of peripherals which are hanging on AHB1 bus
@@ -117,7 +105,6 @@
 
 #define RCC_BASEADDR						(AHB1PERIPH_BASEADDR + 0x3800)
 
-
 /*
  * Base addresses of peripherals which are hanging on APB1 bus
  */
@@ -129,7 +116,6 @@
 #define SPI3_BASEADDR						(APB1PERIPH_BASEADDR + 0x3C00)
 
 #define USART2_BASEADDR						(APB1PERIPH_BASEADDR + 0x4400)
-
 
 /*
  * Base addresses of peripherals which are hanging on APB2 bus
@@ -148,8 +134,6 @@
 /**********************************************************************************************************************
  *										END: Register Base addresses
  *********************************************************************************************************************/
-
-
 
 /**********************************************************************************************************************
  * 								START: Peripheral register definition structures
@@ -171,7 +155,6 @@ typedef struct {
 	volatile uint32_t AFR[2];
 
 } GPIO_RegDef_t;
-
 
 /*
  * RCC peripheral register definition
@@ -210,7 +193,6 @@ typedef struct {
 
 } RCC_RegDef_t;
 
-
 /*
  * EXTI peripheral register definition
  */
@@ -225,7 +207,6 @@ typedef struct {
 
 } EXTI_RegDef_t;
 
-
 /*
  * SYSCFG register definition
  */
@@ -238,7 +219,6 @@ typedef struct {
 	volatile uint32_t CMPCR;
 
 } SYSCFG_RegDef_t;
-
 
 /*
  * SPI register definition
@@ -256,7 +236,6 @@ typedef struct {
 	volatile uint32_t I2SPR;
 
 } SPI_RegDef_t;
-
 
 /*
  * I2C register definition
@@ -276,8 +255,6 @@ typedef struct {
 
 } I2C_RegDef_t;
 
-
-
 /*
  * USART register definition
  */
@@ -293,12 +270,9 @@ typedef struct {
 
 } USART_RegDef_t;
 
-
 /**********************************************************************************************************************
  *								END: Peripheral register definition structures
  *********************************************************************************************************************/
-
-
 
 /**********************************************************************************************************************
  *					START: Peripheral definitions typecasted to corresponding struct defs
@@ -338,8 +312,6 @@ typedef struct {
  *					END: Peripheral definitions typecasted to corresponding struct defs
  *********************************************************************************************************************/
 
-
-
 /**********************************************************************************************************************
  *							 START: Peripheral clock enable and disable macros
  *********************************************************************************************************************/
@@ -354,7 +326,6 @@ typedef struct {
 #define GPIOE_PCLK_EN()						(RCC->AHB1ENR |= (1 << 4))
 #define GPIOH_PCLK_EN()						(RCC->AHB1ENR |= (1 << 7))
 
-
 /*
  * Clock disable macros for GPIOx peripherals
  */
@@ -365,7 +336,6 @@ typedef struct {
 #define GPIOE_PCLK_DI()						(RCC->AHB1ENR &= ~(1 << 4))
 #define GPIOH_PCLK_DI()						(RCC->AHB1ENR &= ~(1 << 7))
 
-
 /*
  * Clock enable macros for I2Cx peripherals
  */
@@ -373,14 +343,12 @@ typedef struct {
 #define I2C2_PCLK_EN()						(RCC->APB1ENR |= (1 << 22))
 #define I2C3_PCLK_EN()						(RCC->APB1ENR |= (1 << 23))
 
-
 /*
  * Clock disable macros for I2Cx peripherals
  */
 #define I2C1_PCLK_DI()						(RCC->APB1ENR &= ~(1 << 21))
 #define I2C2_PCLK_DI()						(RCC->APB1ENR &= ~(1 << 22))
 #define I2C3_PCLK_DI()						(RCC->APB1ENR &= ~(1 << 23))
-
 
 /*
  * Clock enable macros for SPIx peripherals
@@ -391,7 +359,6 @@ typedef struct {
 #define SPI4_PCLK_EN()						(RCC->APB2ENR |= (1 << 13))
 #define SPI5_PCLK_EN()						(RCC->APB2ENR |= (1 << 20))
 
-
 /*
  * Clock disable macros for SPIx peripherals
  */
@@ -401,7 +368,6 @@ typedef struct {
 #define SPI4_PCLK_DI()						(RCC->APB2ENR &= ~(1 << 13))
 #define SPI5_PCLK_DI()						(RCC->APB2ENR &= ~(1 << 20))
 
-
 /*
  * Clock enable macros for USARTx peripherals
  */
@@ -409,14 +375,12 @@ typedef struct {
 #define USART2_PCLK_EN()					(RCC->APB1ENR |= (1 << 17))
 #define USART6_PCLK_EN()					(RCC->APB2ENR |= (1 << 5))
 
-
 /*
  * Clock disable macros for USARTx peripherals
  */
 #define USART1_PCLK_DI()					(RCC->APB2ENR &= ~(1 << 4))
 #define USART2_PCLK_DI()					(RCC->APB1ENR &= ~(1 << 17))
 #define USART6_PCLK_DI()					(RCC->APB2ENR &= ~(1 << 5))
-
 
 /*
  * Clock enable macros for SYSCFG peripherals
@@ -427,8 +391,6 @@ typedef struct {
 /**********************************************************************************************************************
  *									END: Peripheral clock enable and disable macros
  *********************************************************************************************************************/
-
-
 
 /**********************************************************************************************************************
  *										START: Peripheral register reset macros
@@ -444,7 +406,6 @@ typedef struct {
 #define GPIOE_REG_RESET()					do { (RCC->AHB1RSTR |= (1 << 4)); (RCC->AHB1RSTR &= ~(1 << 4)); } while (0)
 #define GPIOH_REG_RESET()					do { (RCC->AHB1RSTR |= (1 << 7)); (RCC->AHB1RSTR &= ~(1 << 7)); } while (0)
 
-
 /*
  * SPIx peripherals reset macros
  */
@@ -454,14 +415,12 @@ typedef struct {
 #define SPI4_REG_RESET()					do { (RCC->APB2RSTR |= (1 << 13)); (RCC->APB2RSTR &= ~(1 << 13)); } while (0)
 #define SPI5_REG_RESET()					do { (RCC->APB2RSTR |= (1 << 20)); (RCC->APB2RSTR &= ~(1 << 20)); } while (0)
 
-
 /*
  * I2Cx peripheral reset macros
  */
 #define I2C1_REG_RESET()					do { (RCC->APB1RSTR |= (1 << 21)); (RCC->APB1RSTR &= ~(1 << 21)); } while (0)
 #define I2C2_REG_RESET()					do { (RCC->APB1RSTR |= (1 << 22)); (RCC->APB1RSTR &= ~(1 << 22)); } while (0)
 #define I2C3_REG_RESET()					do { (RCC->APB1RSTR |= (1 << 23)); (RCC->APB1RSTR &= ~(1 << 23)); } while (0)
-
 
 /*
  * USARTx peripheral reset macros
@@ -473,8 +432,6 @@ typedef struct {
 /**********************************************************************************************************************
  *										END: Peripheral register reset macros
  *********************************************************************************************************************/
-
-
 
 /**********************************************************************************************************************
  *								START: Peripheral register bit position definitions
@@ -498,7 +455,6 @@ typedef struct {
 #define SPI_CR1_BIDIOE						14
 #define SPI_CR1_BIDIMODE					15
 
-
 /*
  * SPI_CR2 register bit position defines
  */
@@ -509,7 +465,6 @@ typedef struct {
 #define SPI_CR2_ERRIE						5
 #define SPI_CR2_RXNEIE						6
 #define SPI_CR2_TXEIE						7
-
 
 /*
  * SPI_SR register bit position defines
@@ -523,7 +478,6 @@ typedef struct {
 #define SPI_SR_OVR							6
 #define SPI_SR_BSY							7
 #define SPI_SR_FRE							8
-
 
 /*
  * I2C_CR1 register bit position defines
@@ -543,7 +497,6 @@ typedef struct {
 #define I2C_CR1_ALERT						13
 #define I2C_CR1_SWRST						15
 
-
 /*
  * I2C_CR2 register bit position defines
  */
@@ -554,7 +507,6 @@ typedef struct {
 #define I2C_CR2_DMAEN						11
 #define I2C_CR2_LAST						12
 
-
 /*
  * I2C_OAR1 register bit position defines
  */
@@ -563,13 +515,11 @@ typedef struct {
 #define I2C_OAR1_ADD8  						8
 #define I2C_OAR1_ADDMODE  					15
 
-
 /*
  * I2C_OAR2 register bit position defines
  */
 #define I2C_OAR2_ENDUAL						0
 #define I2C_OAR2_ADD2						1
-
 
 /*
  * I2C_SR1 register bit position defines
@@ -589,7 +539,6 @@ typedef struct {
 #define I2C_SR1_TIMEOUT						14
 #define I2C_SR1_SMBALERT					15
 
-
 /*
  * I2C_SR2 register bit position defines
  */
@@ -602,7 +551,6 @@ typedef struct {
 #define I2C_SR2_DUALF						7
 #define I2C_SR2_PEC							8
 
-
 /*
  * I2C_CCR register bit position defines
  */
@@ -610,19 +558,16 @@ typedef struct {
 #define I2C_CCR_DUTY						14
 #define I2C_CCR_FS							15
 
-
 /*
  * I2C_TRISE register bit position defines
  */
 #define I2C_TRISE_TRISE						0
-
 
 /*
  * I2C_FLTR register bit position defines
  */
 #define I2C_FLTR_DNF						0
 #define I2C_FLTR_ANOFF						4
-
 
 /*
  * USART_SR register bit position defines
@@ -638,13 +583,11 @@ typedef struct {
 #define USART_SR_LBD						8
 #define USART_SR_CTS						9
 
-
 /*
  * USART_BRR register bit position defines
  */
 #define USART_BRR_DIV_FRACTION				0
 #define USART_BRR_DIV_MANTISSA				4
-
 
 /*
  * USART_CR1 register bit position defines
@@ -665,7 +608,6 @@ typedef struct {
 #define USART_CR1_UE						13
 #define USART_CR1_OVER8						15
 
-
 /*
  * USART_CR2 register bit position defines
  */
@@ -678,7 +620,6 @@ typedef struct {
 #define USART_CR2_CLKEN						11
 #define USART_CR2_STOP						12
 #define USART_CR2_LINEN						14
-
 
 /*
  * USART_CR3 register bit position defines
@@ -696,19 +637,15 @@ typedef struct {
 #define USART_CR3_CTSIE						10
 #define USART_CR3_ONEBIT					11
 
-
 /*
  * USART_GTPR register bit position defines
  */
 #define USART_GTPR_PSC						0
 #define USART_GTPR_GT						8
 
-
 /**********************************************************************************************************************
  *								END: Peripheral register bit position definitions
  *********************************************************************************************************************/
-
-
 
 /**********************************************************************************************************************
  *								START: Miscellaneous macros
@@ -718,12 +655,11 @@ typedef struct {
  * Returns the port code for the given GPIOx base address
  */
 #define GPIO_BASEADDR_TO_PORTCODE(p)		((p == GPIOA)?0:\
-											 (p == GPIOB)?1:\
-											 (p == GPIOC)?2:\
-											 (p == GPIOD)?3:\
-											 (p == GPIOE)?4:\
-											 (p == GPIOH)?7:0)
-
+		(p == GPIOB)?1:\
+				(p == GPIOC)?2:\
+						(p == GPIOD)?3:\
+								(p == GPIOE)?4:\
+										(p == GPIOH)?7:0)
 
 /*
  * IRQ numbers of stm32f411x MCU
@@ -753,8 +689,6 @@ typedef struct {
 #define IRQ_NO_USART2						38
 #define IRQ_NO_USART6						71
 
-
-
 /*
  * Some generic macros
  */
@@ -774,22 +708,5 @@ typedef struct {
  *								END: Miscellaneous macros
  *********************************************************************************************************************/
 
-
 #endif /* INC_STM32F411XX_H_ */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

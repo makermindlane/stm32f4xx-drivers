@@ -16,8 +16,6 @@ char msg[1024] = "UART Tx testing...\n\r";
 
 USART_Handle_t usart2_handle;
 
-void eventCallback(USART_Handle_t *usartHandle, uint8_t appEvent);
-
 void USART2_Init(void) {
 	usart2_handle.usart = USART2;
 	usart2_handle.usartCfg.baud = USART_STD_BAUD_115200;
@@ -26,8 +24,6 @@ void USART2_Init(void) {
 	usart2_handle.usartCfg.noOfStopBits = USART_STOPBITS_1;
 	usart2_handle.usartCfg.wordLength = USART_WORDLEN_8BITS;
 	usart2_handle.usartCfg.parityControl = USART_PARITY_DISABLE;
-
-	usart2_handle.appEventCallback = eventCallback;
 
 	usart_init(&usart2_handle);
 }
@@ -85,12 +81,15 @@ void delay(void) {
 
 int main(void) {
 
+	uint32_t msgLen = (uint32_t) strlen(msg);
+
 	GPIO_ButtonInit();
 
 	USART2_GPIOInit();
 
 	USART2_Init();
 
+	usart_irqInterruptConfig(IRQ_NO_USART2, ENABLE);
 	usart_peripheralControl(USART2, ENABLE);
 
 	while (1) {
@@ -101,14 +100,18 @@ int main(void) {
 		//to avoid button de-bouncing related issues 200ms of delay
 		delay();
 
-		usart_sendData(&usart2_handle, (uint8_t*) msg, strlen(msg));
+		while (usart_sendDataIt(&usart2_handle, (uint8_t*) msg, msgLen) != USART_STATE_READY)
+			;
+		//		usart_sendData(&usart2_handle, (uint8_t*) msg, strlen(msg));
 
 	}
 
 	return 0;
 }
 
+void USART2_IRQHandler() {
+	usart_irqHandling(&usart2_handle);
+}
 
-void eventCallback(USART_Handle_t *usartHandle, uint8_t appEvent) {
-
+void usart_appEventCallback(USART_Handle_t *usartHandle, uint8_t appEvent) {
 }

@@ -7,7 +7,6 @@
 
 #include "stm32f411xx_gpio_driver.h"
 
-
 /*
  * @fn				- gpio_periClockControl
  *
@@ -53,7 +52,6 @@ void gpio_periClockControl(GPIO_RegDef_t *gpioPort, uint8_t enOrDi) {
 	}
 
 }
-
 
 /*
  * @fn						- gpio_init
@@ -143,7 +141,6 @@ void gpio_init(GPIO_Handle_t *gpioHandle) {
 	}
 }
 
-
 /*
  * @fn						- gpio_deInit
  *
@@ -173,24 +170,21 @@ void gpio_deInit(GPIO_RegDef_t *gpioPort) {
 
 }
 
-
 /*
  * Data read and write
  */
 uint8_t gpio_readFromInputPin(GPIO_RegDef_t *gpioPort, uint8_t pinNumber) {
 
 	uint8_t val;
-	val = (uint8_t)((gpioPort->IDR >> pinNumber) & 0x00000001);
+	val = (uint8_t) ((gpioPort->IDR >> pinNumber) & 0x00000001);
 	return val;
 }
-
 
 uint16_t gpio_readFromInputPort(GPIO_RegDef_t *gpioPort) {
 	uint16_t val;
-	val = (uint16_t)(gpioPort->IDR);
+	val = (uint16_t) (gpioPort->IDR);
 	return val;
 }
-
 
 void gpio_writeToOutputPin(GPIO_RegDef_t *gpioPort, uint8_t pinNumber, uint8_t value) {
 
@@ -202,16 +196,13 @@ void gpio_writeToOutputPin(GPIO_RegDef_t *gpioPort, uint8_t pinNumber, uint8_t v
 
 }
 
-
 void gpio_writeToOutputPort(GPIO_RegDef_t *gpioPort, uint16_t value) {
 	gpioPort->ODR = value;
 }
 
-
 void gpio_toggleOutputPin(GPIO_RegDef_t *gpioPort, uint8_t pinNumber) {
 	gpioPort->ODR ^= (1 << pinNumber);
 }
-
 
 /*
  * IRQ configuration and ISR handling
@@ -259,7 +250,6 @@ void gpio_irqInterruptConfig(uint8_t irqNumber, uint8_t enOrDi) {
 
 }
 
-
 void gpio_irqPriorityConfig(uint8_t irqNumber, uint32_t irqPriority) {
 
 	uint8_t iprx = irqNumber / 4;
@@ -269,7 +259,6 @@ void gpio_irqPriorityConfig(uint8_t irqNumber, uint32_t irqPriority) {
 	*(NVIC_IPR_BASEADDR + iprx) |= (irqPriority << shiftAmount);
 
 }
-
 
 void gpio_irqHandling(uint8_t pinNumber) {
 
@@ -281,19 +270,4 @@ void gpio_irqHandling(uint8_t pinNumber) {
 	}
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

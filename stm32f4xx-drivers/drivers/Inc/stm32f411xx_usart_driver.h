@@ -17,7 +17,6 @@ typedef struct {
 
 } USART_Config_t;
 
-
 /*
  * USART peripheral handle structure
  */
@@ -32,8 +31,6 @@ typedef struct {
 	uint8_t *rxBuffer;
 	uint8_t rxBusyState;
 
-	void (*appEventCallback)(struct USART_Handle_t *, uint8_t);
-
 } USART_Handle_t;
 
 /*
@@ -43,7 +40,6 @@ typedef struct {
 #define USART_STATE_READY								1
 #define USART_STATE_BUSY_IN_TX							2
 #define USART_STATE_BUSY_IN_RX							3
-
 
 /*
  * @USART_Event
@@ -55,7 +51,6 @@ typedef struct {
 #define USART_EVENT_IDLE								7
 #define USART_EVENT_ORE									8
 
-
 /*
  * @USART_ERREVENT
  * Possible options for USART_ERREVENT
@@ -63,7 +58,6 @@ typedef struct {
 #define USART_ERREVENT_FE								9
 #define USART_ERREVENT_NE								10
 #define USART_ERREVENT_ORE								11
-
 
 /*
  *@USART_Mode
@@ -89,7 +83,6 @@ typedef struct {
 #define USART_STD_BAUD_921600 							921600
 #define USART_STD_BAUD_2M 								2000000
 #define SUART_STD_BAUD_3M 								3000000
-
 
 /*
  *@USART_ParityControl
@@ -124,7 +117,6 @@ typedef struct {
 #define USART_HW_FLOW_CTRL_RTS    						2
 #define USART_HW_FLOW_CTRL_CTS_RTS						3
 
-
 /*********************************************************************************************************************
  *											APIs supported by this driver
  *********************************************************************************************************************/
@@ -139,19 +131,17 @@ void usart_periClockControl(USART_RegDef_t *usart, uint8_t isEnable);
 void usart_init(USART_Handle_t *usartHandle);
 void usart_deInit(USART_RegDef_t *usart);
 
-
 /*
  * Set baud rate of USART
  */
 void usart_setBaudRate(USART_RegDef_t *usart, uint32_t baudRate);
-
 
 /*
  * Data Send and Receive
  */
 void usart_sendData(USART_Handle_t *usartHandle, uint8_t *txBuffer, uint32_t len);
 void usart_receiveData(USART_Handle_t *usartHandle, uint8_t *rxBuffer, uint32_t len);
-uint8_t usart_sendDataIt(USART_Handle_t *usartHandle,uint8_t *txBuffer, uint32_t len);
+uint8_t usart_sendDataIt(USART_Handle_t *usartHandle, uint8_t *txBuffer, uint32_t len);
 uint8_t usart_receiveDataIt(USART_Handle_t *usartHandle, uint8_t *rxBuffer, uint32_t len);
 
 /*

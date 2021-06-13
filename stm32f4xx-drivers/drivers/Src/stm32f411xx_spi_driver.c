@@ -176,8 +176,7 @@ uint8_t spi_sendDataIt(SPI_Handle_t *spiHandle, uint8_t *txBuffer, uint32_t len)
 /*
  * Receive data interrupt api
  */
-uint8_t spi_receiveDataIt(SPI_Handle_t *spiHandle, uint8_t *rxBuffer,
-		uint32_t len) {
+uint8_t spi_receiveDataIt(SPI_Handle_t *spiHandle, uint8_t *rxBuffer, uint32_t len) {
 	uint8_t state = spiHandle->rxState;
 	if (state != SPI_STATE_BUSY_IN_RX) {
 		spiHandle->rxBuffer = rxBuffer;
@@ -392,7 +391,6 @@ static void spiTxeItHandle(SPI_Handle_t *spiHandle) {
 
 }
 
-
 static void spiRxneItHandle(SPI_Handle_t *spiHandle) {
 
 	if (IS_BIT_SET(spiHandle->spi->CR1, SPI_CR1_DFF)) {
@@ -414,7 +412,6 @@ static void spiRxneItHandle(SPI_Handle_t *spiHandle) {
 	}
 
 }
-
 
 static void spiOvrErrItHandle(SPI_Handle_t *spiHandle) {
 	uint8_t temp;
